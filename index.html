@@ -1,11 +1,2015 @@
 <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Tables - Mariage de Gertie et Gallimard</title>
 
-<html>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: flex-start;
+    }
+
+    .panneau {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      flex: 1;
+      min-width: 320px;
+    }
+
+    .panneau-plan {
+      flex: 1.5;
+      min-width: 350px;
+    }
+
+    .layout > .panneau:not(.panneau-plan) {
+      flex: 0 1 300px;
+      min-width: 300px;
+      max-width: 340px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    h2 {
+      color: #34495e;
+      font-size: 18px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #006dc5;
+    }
+
+    .carte-resultat {
+      background: #f8f9fa;
+      border-left: 5px solid #006dc5;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .invite-selectionne-box {
+      background: #e8f4fc;
+      border: 2px solid #006dc5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .btn-action {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+    }
+
+    .btn-select {
+      background-color: #006dc5;
+    }
+
+    .btn-select:hover {
+      background-color: #005f9e;
+    }
+
+    .btn-valider {
+      background-color: #2ecc71;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .btn-valider:hover {
+      background-color: #27ae60;
+    }
+
+    .btn-reset {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .btn-reset:hover {
+      background-color: #c0392b;
+    }
+
+    .stat-container {
+      margin-bottom: 15px;
+    }
+
+    .barre-fond {
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      height: 18px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .barre-remplissage {
+      background-color: #006dc5;
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .svg-container {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    /* ==============================
+       TABLES
+       ============================== */
+
+    .t {
+      fill: #0078A7;
+      stroke: #005a9e;
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    /*
+     * Numéro de table :
+     * conservé dans le SVG pour identifier
+     * les éléments techniquement, mais masqué.
+     */
+    .num {
+      display: none;
+    }
+
+    /*
+     * Ancien compteur sous le cercle :
+     * désormais masqué.
+     */
+    .compteur {
+      display: none;
+    }
+
+    /*
+     * Texte "Complet".
+     * Il sera positionné dynamiquement
+     * au centre du cercle.
+     */
+    .complet {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      fill: white;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .lbl {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      fill: #222;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .box-lbl {
+      fill: white;
+      stroke: #333;
+      stroke-width: 1.5;
+    }
+
+    /*
+     * Nom de table affiché lors de la sélection.
+     */
+    .nom-table-svg {
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      fill: #000000 !important;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    /*
+     * Compteur affiché au centre après validation.
+     */
+    .compteur-centre {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      fill: white;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .table-group {
+      cursor: pointer;
+    }
+
+    /*
+     * Table sélectionnée.
+     */
+    .table-group.active .t {
+      fill: #f1c40f !important;
+      stroke: #f39c12 !important;
+      stroke-width: 3;
+    }
+
+    /*
+     * Table complète.
+     */
+    .table-group.complete .t {
+      fill: #2ecc71 !important;
+      stroke: #27ae60 !important;
+    }
+
+    /*
+     * Responsive tablette.
+     */
+    @media (max-width: 900px) {
+
+      body {
+        padding: 15px;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      /*
+       * Le plan doit passer au-dessus.
+       */
+      .panneau-plan {
+        order: 1;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .panneau:not(.panneau-plan) {
+        order: 2;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .panneau {
+        width: 100%;
+      }
+    }
+
+    /*
+     * Petit écran.
+     */
+    @media (max-width: 600px) {
+
+      body {
+        padding: 8px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 12px;
+      }
+
+      .panneau {
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      .panneau-plan {
+        padding: 8px;
+      }
+
+      h2 {
+        font-size: 17px;
+      }
+
+      .carte-resultat {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .carte-resultat .btn-select {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .invite-selectionne-box {
+        padding: 12px;
+      }
+
+      .btn-valider {
+        padding: 13px;
+      }
+
+      .btn-reset {
+        padding: 12px;
+      }
+
+      /*
+       * Le SVG prend toute la largeur disponible.
+       */
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    /*
+     * Très petit écran.
+     */
+    @media (max-width: 400px) {
+
+      body {
+        padding: 5px;
+      }
+
+      .panneau {
+        padding: 10px;
+      }
+
+      .panneau-plan {
+        padding: 5px;
+      }
+
+      h1 {
+        font-size: 18px;
+      }
+
+      input {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
 
 <body>
 
-<h1>Bonjour GitHub Pages</h1>
+<h1>Plan de la salle</h1>
+
+<div class="layout">
+
+  <!-- ==========================================
+       PANNEAU GAUCHE
+       ========================================== -->
+
+  <div class="panneau">
+
+    <h2>Recherche de l'invité</h2>
+
+    <input
+      type="text"
+      id="recherche"
+      placeholder="Tapez un nom..."
+      oninput="chercher()"
+    >
+
+    <div id="resultat"></div>
+
+    <!-- INVITÃ‰ SÃ‰LECTIONNÃ‰ -->
+
+    <div
+      id="zone-selection"
+      style="display:none;"
+      class="invite-selectionne-box"
+    >
+
+      <small style="color:#005f9e;font-weight:bold;">
+        Invité sélectionné :
+      </small>
+
+      <div
+        style="font-size:18px;font-weight:bold;margin:5px 0;"
+        id="nom-invite-selectionne"
+      ></div>
+
+      <div
+        style="color:#555;"
+        id="table-invite-selectionne"
+      ></div>
+
+      <button
+        class="btn-action btn-valider"
+        onclick="enregistrerValidation()"
+      >
+        Valider la présence
+      </button>
+
+    </div>
+
+    <!-- STATISTIQUES -->
+
+    <h2>Statistiques d'occupation</h2>
+
+    <div class="stat-container">
+
+      <div>
+        Occupation générale de la salle :
+        <strong id="txt-salle">0%</strong>
+      </div>
+
+      <div class="barre-fond">
+
+        <div
+          id="barre-salle"
+          class="barre-remplissage"
+        ></div>
+
+      </div>
+
+    </div>
+
+    <div
+      id="stat-table-selectionnee"
+      class="stat-container"
+      style="display:none;"
+    >
+
+      <div>
+
+        Occupation de
+        <strong id="nom-table-selectionnee">Table</strong> :
+        <strong id="txt-table">0%</strong>
+
+      </div>
+
+      <div class="barre-fond">
+
+        <div
+          id="barre-table"
+          class="barre-remplissage"
+          style="background-color:#e67e22;"
+        ></div>
+
+      </div>
+
+    </div>
+
+    <button
+      class="btn-reset"
+      onclick="reinitialiserTout()"
+    >
+      🔄 Réinitialiser les tests (Remettre à zéro)
+    </button>
+
+  </div>
+
+
+  <!-- ==========================================
+       PLAN
+       ========================================== -->
+
+  <div class="panneau panneau-plan">
+
+    <h2>Bienvenue au mariage de Gertie & Gallimard</h2>
+
+    <div class="svg-container">
+
+      <div id="svg-plan" class="svg-container"></div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+
+// Chargement des données et du plan depuis des fichiers séparés
+async function initialiserApplication() {
+  try {
+    const [donneesResponse, svgResponse] = await Promise.all([
+      fetch('invites.json'),
+      fetch('plan.svg')
+    ]);
+
+    if (!donneesResponse.ok || !svgResponse.ok) {
+      throw new Error('Impossible de charger les fichiers de l’application.');
+    }
+
+    const donnees = await donneesResponse.json();
+    nomsDesTables = donnees.nomsDesTables || {};
+    donneesJSON = donnees.invites || {};
+
+    document.getElementById('svg-plan').innerHTML = await svgResponse.text();
+
+    // Initialise l'état des tables après le chargement du SVG et des invités
+    initialiserTables();
+    mettreAJourStatsGlobales();
+  } catch (error) {
+    console.error(error);
+    document.getElementById('svg-plan').innerHTML =
+      '<p style="color:#c0392b;font-weight:bold;">Erreur lors du chargement du plan ou des invités.</p>';
+  }
+}
+
+
+/* ============================================================
+   NOMS DES TABLES
+   ============================================================ */
+
+let nomsDesTables = {};
+
+
+/* ============================================================
+   INVITÃ‰S
+   ============================================================ */
+
+let donneesJSON = {};
+
+
+/* ============================================================
+   VARIABLES
+   ============================================================ */
+
+let enregistrements = {};
+let inviteSelectionne = null;
+
+
+/* ============================================================
+   INITIALISATION
+   ============================================================ */
+
+function initialiserDonnees() {
+
+  const sauvegarde =
+    localStorage.getItem('enregistrements_fete_v3');
+
+  if (sauvegarde) {
+
+    enregistrements = JSON.parse(sauvegarde);
+
+  } else {
+
+    enregistrements = {};
+
+    Object.keys(donneesJSON).forEach(key => {
+
+      const num = key.replace('Table ', '');
+
+      enregistrements[num] = [];
+
+    });
+
+  }
+
+}
+
+
+/* ============================================================
+   CHARGEMENT
+   ============================================================ */
+
+window.onload = () => {
+
+  initialiserDonnees();
+
+  /*
+   * Important :
+   * on initialise directement l'affichage
+   * sans aucun numéro de table.
+   */
+  mettreAJourStatsGlobales();
+
+};
+
+
+/* ============================================================
+   RECHERCHE
+   ============================================================ */
+
+function chercher() {
+
+  const query =
+    document.getElementById('recherche')
+      .value
+      .toLowerCase()
+      .trim();
+
+  const divResultat =
+    document.getElementById('resultat');
+
+  reinitialiserSelection();
+
+  if (query === "") {
+
+    divResultat.innerHTML = "";
+
+    return;
+
+  }
+
+  let trouves = [];
+
+
+  Object.keys(donneesJSON).forEach(key => {
+
+    const tableNum =
+      parseInt(
+        key.replace('Table ', '')
+      );
+
+    const guests =
+      donneesJSON[key];
+
+
+    guests.forEach(nom => {
+
+      const dejaPresent =
+        enregistrements[tableNum] &&
+        enregistrements[tableNum].includes(nom);
+
+
+      if (
+        !dejaPresent &&
+        nom.toLowerCase().includes(query)
+      ) {
+
+        trouves.push({
+          nom: nom,
+          tableNum: tableNum
+        });
+
+      }
+
+    });
+
+  });
+
+
+  if (trouves.length > 0) {
+
+    divResultat.innerHTML =
+      trouves.map(i => {
+
+        const nomPerso =
+          nomsDesTables[i.tableNum]
+            ? `Table ${nomsDesTables[i.tableNum]}`
+            : `Table`;
+
+
+        /*
+         * Le numéro n'est volontairement
+         * jamais affiché Ã  l'utilisateur.
+         */
+
+        return `
+
+          <div class="carte-resultat">
+
+            <div>
+
+              <strong>${i.nom}</strong>
+
+              <br>
+
+              <small>
+                ${nomPerso}
+              </small>
+
+            </div>
+
+            <button
+              class="btn-action btn-select"
+              onclick="selectionnerInvite('${i.nom.replace(/'/g, "\\'")}', ${i.tableNum})"
+            >
+              Sélectionner
+            </button>
+
+          </div>
+
+        `;
+
+      }).join("");
+
+  } else {
+
+    divResultat.innerHTML =
+      "<p style='color:#7f8c8d;'>Aucun invité non enregistré trouvé</p>";
+
+  }
+
+}
+
+
+/* ============================================================
+   SÃ‰LECTION INVITÃ‰
+   ============================================================ */
+
+function selectionnerInvite(nom, tableNum) {
+
+  inviteSelectionne = {
+    nom: nom,
+    tableNum: tableNum
+  };
+
+
+  document.getElementById(
+    'resultat'
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    'nom-invite-selectionne'
+  ).innerText = nom;
+
+
+  document.getElementById(
+    'zone-selection'
+  ).style.display = 'block';
+
+
+  surlignerTable(tableNum);
+
+}
+
+
+/* ============================================================
+   ENREGISTRER PRÃ‰SENCE
+   ============================================================ */
+
+function enregistrerValidation() {
+
+  if (!inviteSelectionne) return;
+
+
+  const {
+    tableNum,
+    nom
+  } = inviteSelectionne;
+
+
+  if (!enregistrements[tableNum]) {
+
+    enregistrements[tableNum] = [];
+
+  }
+
+
+  if (!enregistrements[tableNum].includes(nom)) {
+
+    enregistrements[tableNum].push(nom);
+
+  }
+
+
+  localStorage.setItem(
+    'enregistrements_fete_v3',
+    JSON.stringify(enregistrements)
+  );
+
+
+  document.getElementById(
+    'recherche'
+  ).value = "";
+
+
+  /*
+   * La sélection est supprimée.
+   * Le nom de table disparait.
+   * Le compteur est ensuite affiché
+   * au centre par mettreAJourStatsGlobales().
+   */
+
+  reinitialiserSelection();
+
+
+  mettreAJourStatsGlobales();
+
+}
+
+
+/* ============================================================
+   RÃ‰INITIALISATION DE LA SÃ‰LECTION
+   ============================================================ */
+
+function reinitialiserSelection() {
+
+  inviteSelectionne = null;
+
+
+  document.getElementById(
+    'zone-selection'
+  ).style.display = 'none';
+
+
+  document
+    .querySelectorAll('.table-group')
+    .forEach(el => {
+
+      el.classList.remove('active');
+
+    });
+
+
+  /*
+   * Supprime les noms de table affichés
+   * dynamiquement.
+   */
+
+  document
+    .querySelectorAll('.nom-table-svg')
+    .forEach(el => el.remove());
+
+
+  /*
+   * Supprime les compteurs dynamiques
+   * pour permettre leur reconstruction.
+   */
+
+  document
+    .querySelectorAll('.compteur-centre')
+    .forEach(el => el.remove());
+
+
+  document
+    .querySelectorAll('.complet-centre')
+    .forEach(el => el.remove());
+
+
+  document.getElementById(
+    'stat-table-selectionnee'
+  ).style.display = 'none';
+
+
+  /*
+   * On ne fait pas disparaitre les
+   * compteurs définitifs ici :
+   * mettreAJourStatsGlobales() va les
+   * reconstruire immédiatement.
+   */
+
+  mettreAJourStatsGlobales();
+
+}
+
+
+/* ============================================================
+   CRÃ‰ATION DU NOM DE TABLE DANS LE CERCLE
+   ============================================================ */
+
+function surlignerTable(tableNum) {
+
+  const el =
+    document.getElementById(
+      `svg-table-${tableNum}`
+    );
+
+
+  if (!el) return;
+
+
+  /*
+   * Supprimer un éventuel ancien nom.
+   */
+
+  document
+    .querySelectorAll('.nom-table-svg')
+    .forEach(t => t.remove());
+
+
+  /*
+   * Supprimer les compteurs affichés.
+   */
+
+  document
+    .querySelectorAll('.compteur-centre')
+    .forEach(t => t.remove());
+
+
+  document
+    .querySelectorAll('.complet-centre')
+    .forEach(t => t.remove());
+
+
+  el.classList.add('active');
+
+
+  const circle =
+    el.querySelector('circle');
+
+
+  if (!circle) return;
+
+
+  const numText =
+    document.getElementById(
+      `svg-num-${tableNum}`
+    );
+
+
+  const subtext =
+    document.getElementById(
+      `svg-sub-${tableNum}`
+    );
+
+
+  /*
+   * Aucun numéro n'est affiché.
+   */
+
+  if (numText) {
+
+    numText.textContent = '';
+
+  }
+
+
+  if (subtext) {
+
+    subtext.textContent = '';
+
+  }
+
+
+  const cx =
+    parseFloat(
+      circle.getAttribute('cx')
+    );
+
+
+  const cy =
+    parseFloat(
+      circle.getAttribute('cy')
+    );
+
+
+  const radius =
+    parseFloat(
+      circle.getAttribute('r')
+    );
+
+
+  const nomTable =
+    nomsDesTables[tableNum] ||
+    `Table`;
+
+
+  /* ========================================
+     CANVAS POUR MESURER LE TEXTE
+     ======================================== */
+
+  const canvas =
+    document.createElement('canvas');
+
+
+  const ctx =
+    canvas.getContext('2d');
+
+
+  function largeurTexte(texte, taille) {
+
+    ctx.font =
+      `bold ${taille}px Arial`;
+
+    return ctx.measureText(texte).width;
+
+  }
+
+
+  /* ========================================
+     LARGEUR DISPONIBLE
+     ======================================== */
+
+  const largeurDisponible =
+    radius * 2 - 8;
+
+
+  /* ========================================
+     CONSTRUCTION DES CANDIDATS
+     ======================================== */
+
+  const mots =
+    nomTable
+      .trim()
+      .split(/\s+/);
+
+
+  const candidats = [];
+
+
+  /*
+   * Une ligne
+   */
+
+  candidats.push([
+    nomTable
+  ]);
+
+
+  /*
+   * Deux lignes
+   */
+
+  if (mots.length >= 2) {
+
+    for (
+      let i = 1;
+      i < mots.length;
+      i++
+    ) {
+
+      candidats.push([
+
+        mots
+          .slice(0, i)
+          .join(' '),
+
+        mots
+          .slice(i)
+          .join(' ')
+
+      ]);
+
+    }
+
+  }
+
+
+  /*
+   * Trois lignes
+   */
+
+  if (mots.length >= 3) {
+
+    for (
+      let i = 1;
+      i < mots.length - 1;
+      i++
+    ) {
+
+      for (
+        let j = i + 1;
+        j < mots.length;
+        j++
+      ) {
+
+        candidats.push([
+
+          mots
+            .slice(0, i)
+            .join(' '),
+
+          mots
+            .slice(i, j)
+            .join(' '),
+
+          mots
+            .slice(j)
+            .join(' ')
+
+        ]);
+
+      }
+
+    }
+
+  }
+
+
+  /* ========================================
+     CHOIX DE LA MEILLEURE DISPOSITION
+     ======================================== */
+
+  let meilleur = null;
+
+
+  candidats.forEach(lignes => {
+
+    let tailleBase;
+
+
+    if (lignes.length === 1) {
+
+      tailleBase = 9;
+
+    }
+
+    else if (lignes.length === 2) {
+
+      tailleBase = 8.5;
+
+    }
+
+    else {
+
+      tailleBase = 7.5;
+
+    }
+
+
+    const largeurMax =
+      Math.max(
+        ...lignes.map(
+          l =>
+            largeurTexte(
+              l,
+              tailleBase
+            )
+        )
+      );
+
+
+    const facteur =
+      largeurMax > largeurDisponible
+        ? largeurDisponible / largeurMax
+        : 1;
+
+
+    const taille =
+      tailleBase * facteur;
+
+
+    if (taille < 5) return;
+
+
+    const longueurs =
+      lignes.map(
+        l => l.length
+      );
+
+
+    const ecart =
+      Math.max(...longueurs) -
+      Math.min(...longueurs);
+
+
+    const score =
+      taille -
+      ecart * 0.008 -
+      (lignes.length - 1) * 0.05;
+
+
+    if (
+      !meilleur ||
+      score > meilleur.score
+    ) {
+
+      meilleur = {
+
+        lignes: lignes,
+        taille: taille,
+        score: score
+
+      };
+
+    }
+
+  });
+
+
+  /* ========================================
+     SOLUTION DE SECOURS
+     ======================================== */
+
+  if (!meilleur) {
+
+    meilleur = {
+
+      lignes: [
+        nomTable
+      ],
+
+      taille: 5,
+      score: 0
+
+    };
+
+  }
+
+
+  /* ========================================
+     CRÃ‰ATION DU TEXTE SVG
+     ======================================== */
+
+  const texte =
+    document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'text'
+    );
+
+
+  texte.setAttribute(
+    'class',
+    'nom-table-svg'
+  );
+
+
+  texte.setAttribute(
+    'x',
+    cx
+  );
+
+
+  texte.setAttribute(
+    'y',
+    cy
+  );
+
+
+  texte.setAttribute(
+    'text-anchor',
+    'middle'
+  );
+
+
+  texte.setAttribute(
+    'dominant-baseline',
+    'middle'
+  );
+
+
+  texte.setAttribute(
+    'font-family',
+    'Arial, sans-serif'
+  );
+
+
+  texte.setAttribute(
+    'font-weight',
+    'bold'
+  );
+
+
+  texte.setAttribute(
+    'font-size',
+    meilleur.taille.toFixed(1)
+  );
+
+
+  texte.setAttribute(
+    'fill',
+    '#000'
+  );
+
+
+  texte.setAttribute(
+    'pointer-events',
+    'none'
+  );
+
+
+  /* ========================================
+     POSITION DES LIGNES
+     ======================================== */
+
+  let positions;
+
+
+  if (meilleur.lignes.length === 1) {
+
+    positions = [
+      cy
+    ];
+
+  }
+
+  else if (meilleur.lignes.length === 2) {
+
+    const ecart =
+      Math.max(
+        4.5,
+        meilleur.taille * 0.62
+      );
+
+
+    positions = [
+
+      cy - ecart,
+      cy + ecart
+
+    ];
+
+  }
+
+  else {
+
+    const ecart =
+      Math.max(
+        4.5,
+        meilleur.taille * 0.85
+      );
+
+
+    positions = [
+
+      cy - ecart,
+      cy,
+      cy + ecart
+
+    ];
+
+  }
+
+
+  /* ========================================
+     AJOUT DES LIGNES
+     ======================================== */
+
+  meilleur.lignes.forEach(
+    (ligne, index) => {
+
+      const tspan =
+        document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'tspan'
+        );
+
+
+      tspan.setAttribute(
+        'x',
+        cx
+      );
+
+
+      tspan.setAttribute(
+        'y',
+        positions[index]
+      );
+
+
+      tspan.setAttribute(
+        'text-anchor',
+        'middle'
+      );
+
+
+      const largeur =
+        largeurTexte(
+          ligne,
+          meilleur.taille
+        );
+
+
+      if (
+        largeur >
+        largeurDisponible
+      ) {
+
+        tspan.setAttribute(
+          'textLength',
+          largeurDisponible.toFixed(1)
+        );
+
+
+        tspan.setAttribute(
+          'lengthAdjust',
+          'spacingAndGlyphs'
+        );
+
+      }
+
+
+      tspan.textContent = ligne;
+
+
+      texte.appendChild(tspan);
+
+    }
+  );
+
+
+  /*
+   * Le nom est ajouté en dernier.
+   */
+
+  el.appendChild(texte);
+
+
+  /* ========================================
+     INFORMATIONS Ã€ GAUCHE
+     ======================================== */
+
+  const nomLibelle =
+    nomsDesTables[tableNum]
+      ? `Table ${nomsDesTables[tableNum]}`
+      : `Table`;
+
+
+  document.getElementById(
+    'table-invite-selectionne'
+  ).innerText =
+    `${nomLibelle}`;
+
+
+  const guests =
+    donneesJSON[
+      `Table ${tableNum}`
+    ] || [];
+
+
+  const presents =
+    enregistrements[tableNum]
+      ? enregistrements[tableNum].length
+      : 0;
+
+
+  const total =
+    guests.length;
+
+
+  const pct =
+    total > 0
+      ? Math.round(
+          (presents / total) * 100
+        )
+      : 0;
+
+
+  document.getElementById(
+    'stat-table-selectionnee'
+  ).style.display = 'block';
+
+
+  document.getElementById(
+    'nom-table-selectionnee'
+  ).innerText =
+    nomLibelle;
+
+
+  document.getElementById(
+    'txt-table'
+  ).innerText =
+    `${pct}% (${presents}/${total})`;
+
+
+  document.getElementById(
+    'barre-table'
+  ).style.width =
+    `${pct}%`;
+
+
+  /*
+   * On ne veut pas afficher le compteur
+   * pendant la sélection.
+   */
+
+  const ancienCompteur =
+    el.querySelector('.compteur-centre');
+
+
+  if (ancienCompteur) {
+
+    ancienCompteur.remove();
+
+  }
+
+
+  const ancienComplet =
+    el.querySelector('.complet-centre');
+
+
+  if (ancienComplet) {
+
+    ancienComplet.remove();
+
+  }
+
+
+  mettreAJourStatsGlobales();
+
+}
+
+
+/* ============================================================
+   CRÃ‰ER UN COMPTEUR AU CENTRE DU CERCLE
+   ============================================================ */
+
+function afficherCompteurCentre(
+  group,
+  cx,
+  cy,
+  nombre
+) {
+
+  /*
+   * Supprimer d'abord un ancien compteur.
+   */
+
+  const ancien =
+    group.querySelector(
+      '.compteur-centre'
+    );
+
+
+  if (ancien) {
+
+    ancien.remove();
+
+  }
+
+
+  const texte =
+    document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'text'
+    );
+
+
+  texte.setAttribute(
+    'class',
+    'compteur-centre'
+  );
+
+
+  texte.setAttribute(
+    'x',
+    cx
+  );
+
+
+  texte.setAttribute(
+    'y',
+    cy
+  );
+
+
+  texte.setAttribute(
+    'text-anchor',
+    'middle'
+  );
+
+
+  texte.setAttribute(
+    'dominant-baseline',
+    'central'
+  );
+
+
+  texte.textContent = nombre;
+
+
+  group.appendChild(texte);
+
+}
+
+
+/* ============================================================
+   AFFICHER "COMPLET" AU CENTRE
+   ============================================================ */
+
+function afficherCompletCentre(
+  group,
+  cx,
+  cy
+) {
+
+  const ancien =
+    group.querySelector(
+      '.complet-centre'
+    );
+
+
+  if (ancien) {
+
+    ancien.remove();
+
+  }
+
+
+  const texte =
+    document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'text'
+    );
+
+
+  texte.setAttribute(
+    'class',
+    'complet-centre'
+  );
+
+
+  texte.setAttribute(
+    'x',
+    cx
+  );
+
+
+  texte.setAttribute(
+    'y',
+    cy
+  );
+
+
+  texte.setAttribute(
+    'text-anchor',
+    'middle'
+  );
+
+
+  texte.setAttribute(
+    'dominant-baseline',
+    'central'
+  );
+
+
+  texte.setAttribute(
+    'font-family',
+    'Arial, sans-serif'
+  );
+
+
+  texte.setAttribute(
+    'font-size',
+    '9'
+  );
+
+
+  texte.setAttribute(
+    'font-weight',
+    'bold'
+  );
+
+
+  texte.setAttribute(
+    'fill',
+    'white'
+  );
+
+
+  texte.setAttribute(
+    'pointer-events',
+    'none'
+  );
+
+
+  texte.textContent =
+    "Complet";
+
+
+  group.appendChild(texte);
+
+}
+
+
+/* ============================================================
+   STATISTIQUES
+   ============================================================ */
+
+function mettreAJourStatsGlobales() {
+
+  let totalPresents = 0;
+  let totalInvites = 0;
+
+
+  Object.keys(donneesJSON).forEach(key => {
+
+    const tableNum =
+      parseInt(
+        key.replace('Table ', '')
+      );
+
+
+    const guests =
+      donneesJSON[key];
+
+
+    const totalTable =
+      guests.length;
+
+
+    const presentsTable =
+      enregistrements[tableNum]
+        ? enregistrements[tableNum].length
+        : 0;
+
+
+    totalInvites += totalTable;
+
+    totalPresents += presentsTable;
+
+
+    const group =
+      document.getElementById(
+        `svg-table-${tableNum}`
+      );
+
+
+    const numText =
+      document.getElementById(
+        `svg-num-${tableNum}`
+      );
+
+
+    const subtext =
+      document.getElementById(
+        `svg-sub-${tableNum}`
+      );
+
+
+    if (
+      group &&
+      numText &&
+      subtext
+    ) {
+
+      /*
+       * Toujours cacher les numéros.
+       */
+
+      numText.textContent = "";
+
+
+      /*
+       * Si cette table est sélectionnée,
+       * le nom est géré par surlignerTable().
+       */
+
+      if (
+        inviteSelectionne &&
+        inviteSelectionne.tableNum === tableNum
+      ) {
+
+        /*
+         * On enlÃ¨ve les anciens compteurs.
+         */
+
+        const compteur =
+          group.querySelector(
+            '.compteur-centre'
+          );
+
+
+        if (compteur) {
+
+          compteur.remove();
+
+        }
+
+
+        const complet =
+          group.querySelector(
+            '.complet-centre'
+          );
+
+
+        if (complet) {
+
+          complet.remove();
+
+        }
+
+
+        return;
+
+      }
+
+
+      const circle =
+        group.querySelector('circle');
+
+
+      if (!circle) return;
+
+
+      const cx =
+        parseFloat(
+          circle.getAttribute('cx')
+        );
+
+
+      const cy =
+        parseFloat(
+          circle.getAttribute('cy')
+        );
+
+
+      /*
+       * RESET
+       */
+
+      group.classList.remove(
+        'complete'
+      );
+
+
+      subtext.textContent = "";
+
+
+      /*
+       * Supprimer le nom de table.
+       */
+
+      group
+        .querySelectorAll(
+          '.nom-table-svg'
+        )
+        .forEach(el => el.remove());
+
+
+      /*
+       * Supprimer les affichages précédents.
+       */
+
+      group
+        .querySelectorAll(
+          '.compteur-centre'
+        )
+        .forEach(el => el.remove());
+
+
+      group
+        .querySelectorAll(
+          '.complet-centre'
+        )
+        .forEach(el => el.remove());
+
+
+      /* ===================================
+         AUCUN PRÃ‰SENT
+         =================================== */
+
+      if (presentsTable === 0) {
+
+        /*
+         * Cercle bleu normal.
+         */
+
+        group.classList.remove(
+          'complete'
+        );
+
+      }
+
+
+      /* ===================================
+         TABLE COMPLÃˆTE
+         =================================== */
+
+      else if (
+        totalTable > 0 &&
+        presentsTable === totalTable
+      ) {
+
+        group.classList.add(
+          'complete'
+        );
+
+
+        afficherCompletCentre(
+          group,
+          cx,
+          cy
+        );
+
+      }
+
+
+      /* ===================================
+         PRÃ‰SENCE PARTIELLE
+         =================================== */
+
+      else {
+
+        afficherCompteurCentre(
+          group,
+          cx,
+          cy,
+          presentsTable
+        );
+
+      }
+
+    }
+
+  });
+
+
+  const pctGlobal =
+    totalInvites > 0
+      ? Math.round(
+          (totalPresents / totalInvites) * 100
+        )
+      : 0;
+
+
+  document.getElementById(
+    'txt-salle'
+  ).innerText =
+    `${pctGlobal}% (${totalPresents}/${totalInvites})`;
+
+
+  document.getElementById(
+    'barre-salle'
+  ).style.width =
+    `${pctGlobal}%`;
+
+}
+
+
+/* ============================================================
+   RÃ‰INITIALISATION COMPLÃˆTE
+   ============================================================ */
+
+function reinitialiserTout() {
+
+  if (
+    confirm(
+      "Voulez-vous vraiment remettre à zéro la liste des arrivées ?"
+    )
+  ) {
+
+    localStorage.removeItem(
+      'enregistrements_fete_v3'
+    );
+
+
+    Object.keys(donneesJSON).forEach(key => {
+
+      const num =
+        key.replace('Table ', '');
+
+
+      enregistrements[num] = [];
+
+    });
+
+
+    document.getElementById(
+      'recherche'
+    ).value = "";
+
+
+    document.getElementById(
+      'resultat'
+    ).innerHTML = "";
+
+
+    reinitialiserSelection();
+
+
+    mettreAJourStatsGlobales();
+
+  }
+
+}
+
+
+
+// Démarrage de l’application
+document.addEventListener('DOMContentLoaded', initialiserApplication);
+</script>
 
 </body>
-
 </html>
