@@ -169,7 +169,8 @@
 
     .svg-container {
       width: 100%;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
 
     svg {
@@ -551,9 +552,12 @@ async function initialiserApplication() {
     nomsDesTables = donnees.nomsDesTables || {};
     donneesJSON = donnees.invites || {};
 
+    // Injecter le vrai SVG dans le DOM afin que ses IDs svg-table-1 ... svg-table-32
+    // soient directement accessibles par document.getElementById().
     document.getElementById('svg-plan').innerHTML = await svgResponse.text();
 
-    // Initialise l'état des tables après le chargement du SVG et des invités
+    // Les données doivent être initialisées APRÈS le chargement de invites.json.
+    initialiserDonnees();
     initialiserTables();
     mettreAJourStatsGlobales();
   } catch (error) {
@@ -620,18 +624,25 @@ function initialiserDonnees() {
    CHARGEMENT
    ============================================================ */
 
-window.onload = () => {
+function initialiserTables() {
 
-  initialiserDonnees();
+  // Vérifie que le SVG chargé contient bien toutes les tables attendues
+  // et remet leur état visuel à zéro sans modifier les données de présence.
+  Object.keys(donneesJSON).forEach(key => {
+    const tableNum = key.replace('Table ', '');
+    const table = document.getElementById(`svg-table-${tableNum}`);
 
-  /*
-   * Important :
-   * on initialise directement l'affichage
-   * sans aucun numéro de table.
-   */
-  mettreAJourStatsGlobales();
+    if (!table) {
+      console.warn(`Table SVG introuvable : svg-table-${tableNum}`);
+      return;
+    }
 
-};
+    table.classList.remove('active');
+  });
+}
+
+// L'initialisation est entièrement pilotée par initialiserApplication(),
+// après le chargement de invites.json et plan.svg.
 
 
 /* ============================================================
