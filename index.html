@@ -146,9 +146,13 @@
       transition: all 0.3s ease;
     }
 
+    /* Masquer les numéros, sous-textes et compteurs SVG */
     .num,
-    .compteur {
-      display: none;
+    .compteur,
+    .complet,
+    .compteur-centre,
+    .complet-centre {
+      display: none !important;
     }
 
     .lbl {
@@ -165,9 +169,7 @@
       stroke-width: 1.5;
     }
 
-    /*
-     * Nom de table affiché lors de la sélection.
-     */
+    /* Nom de table affiché lors de la sélection */
     .nom-table-svg {
       font-family: Arial, sans-serif;
       font-weight: bold;
@@ -181,18 +183,13 @@
       cursor: pointer;
     }
 
-    /*
-     * Table sélectionnée.
-     */
+    /* Table sélectionnée */
     .table-group.active .t {
       fill: #f1c40f !important;
       stroke: #f39c12 !important;
       stroke-width: 3;
     }
 
-    /*
-     * Responsive tablette.
-     */
     @media (max-width: 900px) {
       body {
         padding: 15px;
@@ -219,9 +216,6 @@
       }
     }
 
-    /*
-     * Petit écran.
-     */
     @media (max-width: 600px) {
       body {
         padding: 8px;
@@ -265,9 +259,6 @@
       }
     }
 
-    /*
-     * Très petit écran.
-     */
     @media (max-width: 400px) {
       body {
         padding: 5px;
@@ -299,7 +290,6 @@
 <div class="layout">
 
   <!-- PANNEAU GAUCHE -->
-
   <div class="panneau">
 
     <h2>Trouver ma table</h2>
@@ -314,13 +304,11 @@
     <div id="resultat"></div>
 
     <!-- INVITÉ SÉLECTIONNÉ -->
-
     <div
       id="zone-selection"
       style="display:none;"
       class="invite-selectionne-box"
     >
-
       <small style="color:#005f9e;font-weight:bold;">
         Invité sélectionné :
       </small>
@@ -334,29 +322,27 @@
         style="color:#555;"
         id="table-invite-selectionne"
       ></div>
-
     </div>
 
   </div>
 
-
   <!-- PLAN -->
-
   <div class="panneau panneau-plan">
 
     <h2>Bienvenue au mariage de Gertie & Gallimard</h2>
 
     <div class="svg-container">
-
       <div id="svg-plan" class="svg-container"></div>
-
     </div>
+
   </div>
 
 </div>
 
-
 <script>
+
+let nomsDesTables = {};
+let donneesJSON = {};
 
 async function initialiserApplication() {
   try {
@@ -383,17 +369,19 @@ async function initialiserApplication() {
   }
 }
 
-let nomsDesTables = {};
-let donneesJSON = {};
-let inviteSelectionne = null;
-
 function initialiserTables() {
   Object.keys(donneesJSON).forEach(key => {
     const tableNum = key.replace('Table ', '');
     const table = document.getElementById(`svg-table-${tableNum}`);
 
     if (table) {
-      table.classList.remove('active');
+      table.classList.remove('active', 'complete');
+      
+      // Nettoyage des textes SVG natifs (numéros / compteurs)
+      const numText = document.getElementById(`svg-num-${tableNum}`);
+      const subtext = document.getElementById(`svg-sub-${tableNum}`);
+      if (numText) numText.textContent = '';
+      if (subtext) subtext.textContent = '';
     }
   });
 }
@@ -453,8 +441,6 @@ function chercher() {
 }
 
 function selectionnerInvite(nom, tableNum) {
-  inviteSelectionne = { nom: nom, tableNum: tableNum };
-
   document.getElementById('resultat').innerHTML = "";
   document.getElementById('nom-invite-selectionne').innerText = nom;
   document.getElementById('zone-selection').style.display = 'block';
@@ -463,8 +449,6 @@ function selectionnerInvite(nom, tableNum) {
 }
 
 function reinitialiserSelection() {
-  inviteSelectionne = null;
-
   document.getElementById('zone-selection').style.display = 'none';
 
   document.querySelectorAll('.table-group').forEach(el => {
@@ -478,6 +462,7 @@ function surlignerTable(tableNum) {
   const el = document.getElementById(`svg-table-${tableNum}`);
   if (!el) return;
 
+  // Supprimer les anciens noms affichés
   document.querySelectorAll('.nom-table-svg').forEach(t => t.remove());
 
   el.classList.add('active');
@@ -487,7 +472,6 @@ function surlignerTable(tableNum) {
 
   const numText = document.getElementById(`svg-num-${tableNum}`);
   const subtext = document.getElementById(`svg-sub-${tableNum}`);
-
   if (numText) numText.textContent = '';
   if (subtext) subtext.textContent = '';
 
