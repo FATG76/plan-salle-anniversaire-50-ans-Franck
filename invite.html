@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Trouver ma Table - Mariage de Gertie et Gallimard</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -135,41 +138,41 @@
       border-radius: 8px;
     }
 
-    /* ==============================
-       TABLES
-       ============================== */
 
-    .t {
-      fill: #0078A7;
-      stroke: #005a9e;
-      stroke-width: 2;
+    /* ==========================================
+       STYLES DES TABLES
+       ========================================== */
+
+    /*
+      Ces styles servent principalement lorsque
+      le SVG est chargé dynamiquement.
+      Les styles principaux des cercles sont
+      définis dans plan.svg.
+    */
+
+    .table-group {
+      cursor: pointer;
       transition: all 0.3s ease;
     }
 
-    /* Masquer les numéros, sous-textes et compteurs SVG */
-    .num,
-    .compteur,
-    .complet,
-    .compteur-centre,
-    .complet-centre {
-      display: none !important;
+
+    /*
+      TABLE SÉLECTIONNÉE
+
+      Important :
+      Le plan.svg contient également cette règle.
+      Elle est répétée ici comme sécurité.
+    */
+
+    .table-group.active .t {
+      fill: #D4A017 !important;
+      stroke: #8A6500 !important;
+      stroke-width: 4 !important;
     }
 
-    .lbl {
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      fill: #222;
-      text-anchor: middle;
-      dominant-baseline: central;
-    }
 
-    .box-lbl {
-      fill: white;
-      stroke: #333;
-      stroke-width: 1.5;
-    }
+    /* Nom de table affiché dans le cercle */
 
-    /* Nom de table affiché lors de la sélection */
     .nom-table-svg {
       font-family: Arial, sans-serif;
       font-weight: bold;
@@ -179,18 +182,13 @@
       pointer-events: none;
     }
 
-    .table-group {
-      cursor: pointer;
-    }
 
-    /* Table sélectionnée */
-    .table-group.active .t {
-      fill: #f1c40f !important;
-      stroke: #f39c12 !important;
-      stroke-width: 3;
-    }
+    /* ==========================================
+       RESPONSIVE TABLETTE
+       ========================================== */
 
     @media (max-width: 900px) {
+
       body {
         padding: 15px;
       }
@@ -216,7 +214,13 @@
       }
     }
 
+
+    /* ==========================================
+       RESPONSIVE MOBILE
+       ========================================== */
+
     @media (max-width: 600px) {
+
       body {
         padding: 8px;
       }
@@ -259,7 +263,9 @@
       }
     }
 
+
     @media (max-width: 400px) {
+
       body {
         padding: 5px;
       }
@@ -280,319 +286,1030 @@
         font-size: 15px;
       }
     }
+
   </style>
+
 </head>
+
 
 <body>
 
-<h1>Plan de la salle</h1>
+  <h1>Plan de la salle</h1>
 
-<div class="layout">
 
-  <!-- PANNEAU GAUCHE -->
-  <div class="panneau">
+  <div class="layout">
 
-    <h2>Trouver ma table</h2>
 
-    <input
-      type="text"
-      id="recherche"
-      placeholder="Tapez votre nom..."
-      oninput="chercher()"
-    >
+    <!-- ======================================
+         PANNEAU RECHERCHE
+         ====================================== -->
 
-    <div id="resultat"></div>
+    <div class="panneau">
 
-    <!-- INVITÉ SÉLECTIONNÉ -->
-    <div
-      id="zone-selection"
-      style="display:none;"
-      class="invite-selectionne-box"
-    >
-      <small style="color:#005f9e;font-weight:bold;">
-        Invité sélectionné :
-      </small>
+      <h2>Trouver ma table</h2>
+
+      <input
+        type="text"
+        id="recherche"
+        placeholder="Tapez votre nom..."
+        oninput="chercher()"
+      >
+
+      <div id="resultat"></div>
+
+
+      <!-- INVITÉ SÉLECTIONNÉ -->
 
       <div
-        style="font-size:18px;font-weight:bold;margin:5px 0;"
-        id="nom-invite-selectionne"
-      ></div>
+        id="zone-selection"
+        style="display:none;"
+        class="invite-selectionne-box"
+      >
 
-      <div
-        style="color:#555;"
-        id="table-invite-selectionne"
-      ></div>
+        <small style="color:#005f9e;font-weight:bold;">
+          Invité sélectionné :
+        </small>
+
+        <div
+          style="font-size:18px;font-weight:bold;margin:5px 0;"
+          id="nom-invite-selectionne"
+        ></div>
+
+        <div
+          style="color:#555;"
+          id="table-invite-selectionne"
+        ></div>
+
+      </div>
+
     </div>
+
+
+
+    <!-- ======================================
+         PLAN DE LA SALLE
+         ====================================== -->
+
+    <div class="panneau panneau-plan">
+
+      <h2>Bienvenue au mariage de Gertie & Gallimard</h2>
+
+      <div class="svg-container">
+        <div id="svg-plan"></div>
+      </div>
+
+    </div>
+
 
   </div>
 
-  <!-- PLAN -->
-  <div class="panneau panneau-plan">
 
-    <h2>Bienvenue au mariage de Gertie & Gallimard</h2>
 
-    <div class="svg-container">
-      <div id="svg-plan" class="svg-container"></div>
-    </div>
+  <script>
 
-  </div>
+    /* ==========================================
+       DONNÉES
+       ========================================== */
 
-</div>
+    let nomsDesTables = {};
+    let donneesJSON = {};
 
-<script>
 
-let nomsDesTables = {};
-let donneesJSON = {};
 
-async function initialiserApplication() {
-  try {
-    const [donneesResponse, svgResponse] = await Promise.all([
-      fetch('invites.json'),
-      fetch('plan.svg')
-    ]);
+    /* ==========================================
+       INITIALISATION APPLICATION
+       ========================================== */
 
-    if (!donneesResponse.ok || !svgResponse.ok) {
-      throw new Error('Impossible de charger les fichiers de l’application.');
-    }
+    async function initialiserApplication() {
 
-    const donnees = await donneesResponse.json();
-    nomsDesTables = donnees.nomsDesTables || {};
-    donneesJSON = donnees.invites || {};
+      try {
 
-    document.getElementById('svg-plan').innerHTML = await svgResponse.text();
+        /*
+          Chargement simultané :
+          - invites.json
+          - plan.svg
+        */
 
-    initialiserTables();
-  } catch (error) {
-    console.error(error);
-    document.getElementById('svg-plan').innerHTML =
-      '<p style="color:#c0392b;font-weight:bold;">Erreur lors du chargement du plan ou des invités.</p>';
-  }
-}
-
-function initialiserTables() {
-  Object.keys(donneesJSON).forEach(key => {
-    const tableNum = key.replace('Table ', '');
-    const table = document.getElementById(`svg-table-${tableNum}`);
-
-    if (table) {
-      table.classList.remove('active', 'complete');
-      
-      // Nettoyage des textes SVG natifs (numéros / compteurs)
-      const numText = document.getElementById(`svg-num-${tableNum}`);
-      const subtext = document.getElementById(`svg-sub-${tableNum}`);
-      if (numText) numText.textContent = '';
-      if (subtext) subtext.textContent = '';
-    }
-  });
-}
-
-function chercher() {
-  const query = document.getElementById('recherche').value.toLowerCase().trim();
-  const divResultat = document.getElementById('resultat');
-
-  reinitialiserSelection();
-
-  if (query === "") {
-    divResultat.innerHTML = "";
-    return;
-  }
-
-  let trouves = [];
-
-  Object.keys(donneesJSON).forEach(key => {
-    const tableNum = parseInt(key.replace('Table ', ''));
-    const guests = donneesJSON[key];
-
-    guests.forEach(nom => {
-      if (nom.toLowerCase().includes(query)) {
-        trouves.push({
-          nom: nom,
-          tableNum: tableNum
-        });
-      }
-    });
-  });
-
-  if (trouves.length > 0) {
-    divResultat.innerHTML = trouves.map(i => {
-      const nomPerso = nomsDesTables[i.tableNum]
-        ? `Table ${nomsDesTables[i.tableNum]}`
-        : `Table`;
-
-      return `
-        <div class="carte-resultat">
-          <div>
-            <strong>${i.nom}</strong>
-            <br>
-            <small>${nomPerso}</small>
-          </div>
-          <button
-            class="btn-action btn-select"
-            onclick="selectionnerInvite('${i.nom.replace(/'/g, "\\'")}', ${i.tableNum})"
-          >
-            Voir ma table
-          </button>
-        </div>
-      `;
-    }).join("");
-  } else {
-    divResultat.innerHTML = "<p style='color:#7f8c8d;'>Aucun invité trouvé</p>";
-  }
-}
-
-function selectionnerInvite(nom, tableNum) {
-  document.getElementById('resultat').innerHTML = "";
-  document.getElementById('nom-invite-selectionne').innerText = nom;
-  document.getElementById('zone-selection').style.display = 'block';
-
-  surlignerTable(tableNum);
-}
-
-function reinitialiserSelection() {
-  document.getElementById('zone-selection').style.display = 'none';
-
-  document.querySelectorAll('.table-group').forEach(el => {
-    el.classList.remove('active');
-  });
-
-  document.querySelectorAll('.nom-table-svg').forEach(el => el.remove());
-}
-
-function surlignerTable(tableNum) {
-  const el = document.getElementById(`svg-table-${tableNum}`);
-  if (!el) return;
-
-  // Supprimer les anciens noms affichés
-  document.querySelectorAll('.nom-table-svg').forEach(t => t.remove());
-
-  el.classList.add('active');
-
-  const circle = el.querySelector('circle');
-  if (!circle) return;
-
-  const numText = document.getElementById(`svg-num-${tableNum}`);
-  const subtext = document.getElementById(`svg-sub-${tableNum}`);
-  if (numText) numText.textContent = '';
-  if (subtext) subtext.textContent = '';
-
-  const cx = parseFloat(circle.getAttribute('cx'));
-  const cy = parseFloat(circle.getAttribute('cy'));
-  const radius = parseFloat(circle.getAttribute('r'));
-
-  const nomTable = nomsDesTables[tableNum] || `Table`;
-
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  function largeurTexte(texte, taille) {
-    ctx.font = `bold ${taille}px Arial`;
-    return ctx.measureText(texte).width;
-  }
-
-  const largeurDisponible = radius * 2 - 8;
-  const mots = nomTable.trim().split(/\s+/);
-  const candidats = [];
-
-  candidats.push([nomTable]);
-
-  if (mots.length >= 2) {
-    for (let i = 1; i < mots.length; i++) {
-      candidats.push([
-        mots.slice(0, i).join(' '),
-        mots.slice(i).join(' ')
-      ]);
-    }
-  }
-
-  if (mots.length >= 3) {
-    for (let i = 1; i < mots.length - 1; i++) {
-      for (let j = i + 1; j < mots.length; j++) {
-        candidats.push([
-          mots.slice(0, i).join(' '),
-          mots.slice(i, j).join(' '),
-          mots.slice(j).join(' ')
+        const [donneesResponse, svgResponse] = await Promise.all([
+          fetch('invites.json'),
+          fetch('plan.svg')
         ]);
+
+
+        if (!donneesResponse.ok || !svgResponse.ok) {
+
+          throw new Error(
+            'Impossible de charger les fichiers de l’application.'
+          );
+
+        }
+
+
+        /* Chargement JSON */
+
+        const donnees = await donneesResponse.json();
+
+        nomsDesTables =
+          donnees.nomsDesTables || {};
+
+        donneesJSON =
+          donnees.invites || {};
+
+
+        /* Injection SVG */
+
+        document.getElementById('svg-plan').innerHTML =
+          await svgResponse.text();
+
+
+        /*
+          IMPORTANT
+
+          On initialise seulement APRÈS
+          avoir chargé le JSON et le SVG.
+        */
+
+        initialiserTables();
+
       }
-    }
-  }
 
-  let meilleur = null;
+      catch (error) {
 
-  candidats.forEach(lignes => {
-    let tailleBase;
-    if (lignes.length === 1) tailleBase = 9;
-    else if (lignes.length === 2) tailleBase = 8.5;
-    else tailleBase = 7.5;
+        console.error(error);
 
-    const largeurMax = Math.max(...lignes.map(l => largeurTexte(l, tailleBase)));
-    const facteur = largeurMax > largeurDisponible ? largeurDisponible / largeurMax : 1;
-    const taille = tailleBase * facteur;
+        document.getElementById('svg-plan').innerHTML =
+          `
+          <p style="
+            color:#c0392b;
+            font-weight:bold;
+            padding:20px;
+          ">
+            Erreur lors du chargement du plan ou des invités.
+          </p>
+          `;
 
-    if (taille < 5) return;
+      }
 
-    const longueurs = lignes.map(l => l.length);
-    const ecart = Math.max(...longueurs) - Math.min(...longueurs);
-    const score = taille - ecart * 0.008 - (lignes.length - 1) * 0.05;
-
-    if (!meilleur || score > meilleur.score) {
-      meilleur = { lignes: lignes, taille: taille, score: score };
-    }
-  });
-
-  if (!meilleur) {
-    meilleur = { lignes: [nomTable], taille: 5, score: 0 };
-  }
-
-  const texte = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  texte.setAttribute('class', 'nom-table-svg');
-  texte.setAttribute('x', cx);
-  texte.setAttribute('y', cy);
-  texte.setAttribute('text-anchor', 'middle');
-  texte.setAttribute('dominant-baseline', 'middle');
-  texte.setAttribute('font-family', 'Arial, sans-serif');
-  texte.setAttribute('font-weight', 'bold');
-  texte.setAttribute('font-size', meilleur.taille.toFixed(1));
-  texte.setAttribute('fill', '#000');
-  texte.setAttribute('pointer-events', 'none');
-
-  let positions;
-  if (meilleur.lignes.length === 1) {
-    positions = [cy];
-  } else if (meilleur.lignes.length === 2) {
-    const ecart = Math.max(4.5, meilleur.taille * 0.62);
-    positions = [cy - ecart, cy + ecart];
-  } else {
-    const ecart = Math.max(4.5, meilleur.taille * 0.85);
-    positions = [cy - ecart, cy, cy + ecart];
-  }
-
-  meilleur.lignes.forEach((ligne, index) => {
-    const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-    tspan.setAttribute('x', cx);
-    tspan.setAttribute('y', positions[index]);
-    tspan.setAttribute('text-anchor', 'middle');
-
-    const largeur = largeurTexte(ligne, meilleur.taille);
-    if (largeur > largeurDisponible) {
-      tspan.setAttribute('textLength', largeurDisponible.toFixed(1));
-      tspan.setAttribute('lengthAdjust', 'spacingAndGlyphs');
     }
 
-    tspan.textContent = ligne;
-    texte.appendChild(tspan);
-  });
 
-  el.appendChild(texte);
 
-  const nomLibelle = nomsDesTables[tableNum]
-    ? `Table ${nomsDesTables[tableNum]}`
-    : `Table`;
+    /* ==========================================
+       INITIALISATION DES TABLES
+       ========================================== */
 
-  document.getElementById('table-invite-selectionne').innerText = `${nomLibelle}`;
-}
+    function initialiserTables() {
 
-document.addEventListener('DOMContentLoaded', initialiserApplication);
-</script>
+      Object.keys(donneesJSON).forEach(key => {
+
+        const tableNum =
+          key.replace('Table ', '');
+
+
+        const table =
+          document.getElementById(
+            `svg-table-${tableNum}`
+          );
+
+
+        if (table) {
+
+          /*
+            Supprime toute ancienne sélection
+          */
+
+          table.classList.remove(
+            'active',
+            'complete'
+          );
+
+        }
+
+      });
+
+    }
+
+
+
+    /* ==========================================
+       RECHERCHE INVITÉ
+       ========================================== */
+
+    function chercher() {
+
+      const query =
+        document
+          .getElementById('recherche')
+          .value
+          .toLowerCase()
+          .trim();
+
+
+      const divResultat =
+        document.getElementById('resultat');
+
+
+      /*
+        À chaque nouvelle recherche,
+        on remet le plan à zéro.
+      */
+
+      reinitialiserSelection();
+
+
+      if (query === "") {
+
+        divResultat.innerHTML = "";
+
+        return;
+
+      }
+
+
+      let trouves = [];
+
+
+      Object.keys(donneesJSON).forEach(key => {
+
+        const tableNum =
+          parseInt(
+            key.replace('Table ', '')
+          );
+
+
+        const guests =
+          donneesJSON[key];
+
+
+        guests.forEach(nom => {
+
+          if (
+            nom
+              .toLowerCase()
+              .includes(query)
+          ) {
+
+            trouves.push({
+              nom: nom,
+              tableNum: tableNum
+            });
+
+          }
+
+        });
+
+      });
+
+
+
+      /* ======================================
+         AFFICHAGE DES RÉSULTATS
+         ====================================== */
+
+      if (trouves.length > 0) {
+
+        divResultat.innerHTML =
+          trouves.map(i => {
+
+
+            const nomTable =
+              nomsDesTables[i.tableNum]
+                ? nomsDesTables[i.tableNum]
+                : `Table ${i.tableNum}`;
+
+
+            return `
+
+              <div class="carte-resultat">
+
+                <div>
+
+                  <strong>
+                    ${i.nom}
+                  </strong>
+
+                  <br>
+
+                  <small>
+                    Table ${nomTable}
+                  </small>
+
+                </div>
+
+
+                <button
+                  class="btn-action btn-select"
+                  onclick="selectionnerInvite(
+                    '${i.nom.replace(/'/g, "\\'")}',
+                    ${i.tableNum}
+                  )"
+                >
+
+                  Voir ma table
+
+                </button>
+
+              </div>
+
+            `;
+
+          }).join("");
+
+      }
+
+      else {
+
+        divResultat.innerHTML =
+          `
+          <p style="color:#7f8c8d;">
+            Aucun invité trouvé
+          </p>
+          `;
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       SÉLECTION D'UN INVITÉ
+       ========================================== */
+
+    function selectionnerInvite(nom, tableNum) {
+
+      /*
+        Masquer la liste des résultats
+      */
+
+      document.getElementById('resultat').innerHTML = "";
+
+
+      /*
+        Afficher l'invité sélectionné
+      */
+
+      document
+        .getElementById(
+          'nom-invite-selectionne'
+        )
+        .innerText = nom;
+
+
+      document
+        .getElementById(
+          'zone-selection'
+        )
+        .style.display = 'block';
+
+
+      /*
+        Mettre la table en évidence
+      */
+
+      surlignerTable(tableNum);
+
+    }
+
+
+
+    /* ==========================================
+       RÉINITIALISATION
+       ========================================== */
+
+    function reinitialiserSelection() {
+
+      /*
+        Masquer l'invité sélectionné
+      */
+
+      document
+        .getElementById(
+          'zone-selection'
+        )
+        .style.display = 'none';
+
+
+      /*
+        Retirer le jaune de toutes les tables
+      */
+
+      document
+        .querySelectorAll(
+          '.table-group.active'
+        )
+        .forEach(el => {
+
+          el.classList.remove('active');
+
+        });
+
+
+      /*
+        Supprimer les noms ajoutés
+        dynamiquement dans le SVG
+      */
+
+      document
+        .querySelectorAll(
+          '.nom-table-svg'
+        )
+        .forEach(el => el.remove());
+
+    }
+
+
+
+    /* ==========================================
+       SURBRILLANCE DE LA TABLE
+       ========================================== */
+
+    function surlignerTable(tableNum) {
+
+      /*
+        Sécurité :
+        retirer toute sélection précédente
+      */
+
+      document
+        .querySelectorAll(
+          '.table-group.active'
+        )
+        .forEach(el => {
+
+          el.classList.remove('active');
+
+        });
+
+
+      /*
+        Supprimer ancien nom affiché
+      */
+
+      document
+        .querySelectorAll(
+          '.nom-table-svg'
+        )
+        .forEach(t => t.remove());
+
+
+      /*
+        Trouver le groupe SVG correspondant
+      */
+
+      const el =
+        document.getElementById(
+          `svg-table-${tableNum}`
+        );
+
+
+      if (!el) {
+
+        console.warn(
+          `Table ${tableNum} introuvable dans le SVG`
+        );
+
+        return;
+
+      }
+
+
+      /*
+        ====================================
+        AJOUT DE LA CLASSE ACTIVE
+
+        C'est cette ligne qui déclenche
+        la couleur jaune dans plan.svg
+        ====================================
+      */
+
+      el.classList.add('active');
+
+
+      /*
+        Trouver le cercle
+      */
+
+      const circle =
+        el.querySelector('circle');
+
+
+      if (!circle) return;
+
+
+      /*
+        Coordonnées du cercle
+      */
+
+      const cx =
+        parseFloat(
+          circle.getAttribute('cx')
+        );
+
+
+      const cy =
+        parseFloat(
+          circle.getAttribute('cy')
+        );
+
+
+      const radius =
+        parseFloat(
+          circle.getAttribute('r')
+        );
+
+
+      /*
+        Récupération du nom de table
+      */
+
+      const nomTable =
+        nomsDesTables[tableNum]
+        || `Table ${tableNum}`;
+
+
+      /*
+        Canvas temporaire pour mesurer
+        la largeur des textes
+      */
+
+      const canvas =
+        document.createElement('canvas');
+
+
+      const ctx =
+        canvas.getContext('2d');
+
+
+      function largeurTexte(
+        texte,
+        taille
+      ) {
+
+        ctx.font =
+          `bold ${taille}px Arial`;
+
+        return ctx.measureText(texte).width;
+
+      }
+
+
+      /*
+        Largeur maximale disponible
+        dans le cercle
+      */
+
+      const largeurDisponible =
+        radius * 2 - 12;
+
+
+      const mots =
+        nomTable
+          .trim()
+          .split(/\s+/);
+
+
+      const candidats = [];
+
+
+      /*
+        Une seule ligne
+      */
+
+      candidats.push([
+        nomTable
+      ]);
+
+
+      /*
+        Deux lignes possibles
+      */
+
+      if (mots.length >= 2) {
+
+        for (
+          let i = 1;
+          i < mots.length;
+          i++
+        ) {
+
+          candidats.push([
+
+            mots
+              .slice(0, i)
+              .join(' '),
+
+            mots
+              .slice(i)
+              .join(' ')
+
+          ]);
+
+        }
+
+      }
+
+
+      /*
+        Trois lignes possibles
+      */
+
+      if (mots.length >= 3) {
+
+        for (
+          let i = 1;
+          i < mots.length - 1;
+          i++
+        ) {
+
+          for (
+            let j = i + 1;
+            j < mots.length;
+            j++
+          ) {
+
+            candidats.push([
+
+              mots
+                .slice(0, i)
+                .join(' '),
+
+              mots
+                .slice(i, j)
+                .join(' '),
+
+              mots
+                .slice(j)
+                .join(' ')
+
+            ]);
+
+          }
+
+        }
+
+      }
+
+
+      /*
+        ======================================
+        CHOIX DU MEILLEUR DÉCOUPAGE
+        ======================================
+      */
+
+      let meilleur = null;
+
+
+      candidats.forEach(lignes => {
+
+        let tailleBase;
+
+
+        if (lignes.length === 1) {
+
+          tailleBase = 12;
+
+        }
+
+        else if (lignes.length === 2) {
+
+          tailleBase = 10;
+
+        }
+
+        else {
+
+          tailleBase = 8;
+
+        }
+
+
+        const largeurMax =
+          Math.max(
+            ...lignes.map(
+              l => largeurTexte(
+                l,
+                tailleBase
+              )
+            )
+          );
+
+
+        const facteur =
+          largeurMax > largeurDisponible
+            ? largeurDisponible / largeurMax
+            : 1;
+
+
+        const taille =
+          tailleBase * facteur;
+
+
+        /*
+          Trop petit = rejeté
+        */
+
+        if (taille < 5) return;
+
+
+        const longueurs =
+          lignes.map(
+            l => l.length
+          );
+
+
+        const ecart =
+          Math.max(...longueurs)
+          -
+          Math.min(...longueurs);
+
+
+        const score =
+          taille
+          -
+          ecart * 0.008
+          -
+          (lignes.length - 1) * 0.05;
+
+
+        if (
+          !meilleur
+          ||
+          score > meilleur.score
+        ) {
+
+          meilleur = {
+
+            lignes: lignes,
+            taille: taille,
+            score: score
+
+          };
+
+        }
+
+      });
+
+
+      /*
+        Sécurité
+      */
+
+      if (!meilleur) {
+
+        meilleur = {
+          lignes: [nomTable],
+          taille: 5,
+          score: 0
+        };
+
+      }
+
+
+      /*
+        ======================================
+        CRÉATION DU TEXTE SVG
+        ======================================
+      */
+
+      const texte =
+        document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'text'
+        );
+
+
+      texte.setAttribute(
+        'class',
+        'nom-table-svg'
+      );
+
+
+      texte.setAttribute(
+        'x',
+        cx
+      );
+
+
+      texte.setAttribute(
+        'y',
+        cy
+      );
+
+
+      texte.setAttribute(
+        'text-anchor',
+        'middle'
+      );
+
+
+      texte.setAttribute(
+        'dominant-baseline',
+        'middle'
+      );
+
+
+      texte.setAttribute(
+        'font-family',
+        'Arial, sans-serif'
+      );
+
+
+      texte.setAttribute(
+        'font-weight',
+        'bold'
+      );
+
+
+      texte.setAttribute(
+        'font-size',
+        meilleur.taille.toFixed(1)
+      );
+
+
+      /*
+        Texte noir pour contraste
+        avec le jaune doré
+      */
+
+      texte.setAttribute(
+        'fill',
+        '#000000'
+      );
+
+
+      texte.setAttribute(
+        'pointer-events',
+        'none'
+      );
+
+
+      /*
+        Position verticale des lignes
+      */
+
+      let positions;
+
+
+      if (
+        meilleur.lignes.length === 1
+      ) {
+
+        positions = [cy];
+
+      }
+
+      else if (
+        meilleur.lignes.length === 2
+      ) {
+
+        const ecart =
+          Math.max(
+            5,
+            meilleur.taille * 0.8
+          );
+
+
+        positions = [
+          cy - ecart,
+          cy + ecart
+        ];
+
+      }
+
+      else {
+
+        const ecart =
+          Math.max(
+            5,
+            meilleur.taille * 1.1
+          );
+
+
+        positions = [
+          cy - ecart,
+          cy,
+          cy + ecart
+        ];
+
+      }
+
+
+      /*
+        ======================================
+        AJOUT DES LIGNES
+        ======================================
+      */
+
+      meilleur.lignes.forEach(
+        (ligne, index) => {
+
+          const tspan =
+            document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'tspan'
+            );
+
+
+          tspan.setAttribute(
+            'x',
+            cx
+          );
+
+
+          tspan.setAttribute(
+            'y',
+            positions[index]
+          );
+
+
+          tspan.setAttribute(
+            'text-anchor',
+            'middle'
+          );
+
+
+          /*
+            Ajuster si nécessaire
+          */
+
+          const largeur =
+            largeurTexte(
+              ligne,
+              meilleur.taille
+            );
+
+
+          if (
+            largeur > largeurDisponible
+          ) {
+
+            tspan.setAttribute(
+              'textLength',
+              largeurDisponible.toFixed(1)
+            );
+
+
+            tspan.setAttribute(
+              'lengthAdjust',
+              'spacingAndGlyphs'
+            );
+
+          }
+
+
+          tspan.textContent =
+            ligne;
+
+
+          texte.appendChild(tspan);
+
+        }
+      );
+
+
+      /*
+        Ajouter le nom dans la table
+      */
+
+      el.appendChild(texte);
+
+
+      /*
+        ======================================
+        AFFICHAGE DU NOM DE TABLE
+        SOUS L'INVITÉ
+        ======================================
+      */
+
+      const nomLibelle =
+        nomsDesTables[tableNum]
+          ? `Table ${nomsDesTables[tableNum]}`
+          : `Table ${tableNum}`;
+
+
+      document
+        .getElementById(
+          'table-invite-selectionne'
+        )
+        .innerText =
+          nomLibelle;
+
+    }
+
+
+
+    /* ==========================================
+       DÉMARRAGE APPLICATION
+       ========================================== */
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      initialiserApplication
+    );
+
+  </script>
 
 </body>
+
 </html>
