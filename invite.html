@@ -239,21 +239,23 @@
     let donneesJSON = {};
 
     /* ==========================================
-       FONCTION : NETTOYER LES NUMÉROS DU SVG
+       FONCTION : DÉTECTION ET MASQUAGE INTELLIGENT
        ========================================== */
     function masquerNumerosDuSVG(elementConteneur) {
       if (!elementConteneur) return;
-      
-      // On cherche tous les textes dans les groupes de tables
-      const tousLesTextes = elementConteneur.querySelectorAll('.table-group text, g[id*="table"] text');
-      
+
+      const tousLesTextes = elementConteneur.querySelectorAll('text');
+
       tousLesTextes.forEach(t => {
-        // Ne pas toucher aux noms de table ajoutés dynamiquement
+        // Ne pas toucher aux noms de table créés dynamiquement
         if (t.classList.contains('nom-table-svg')) return;
-        
-        // Masquer le texte s'il contient un numéro ou s'il est au centre du cercle
-        t.style.display = 'none';
-        t.style.visibility = 'hidden';
+
+        const contenu = t.textContent.trim();
+
+        // Si le texte est un simple numéro (chiffres uniquement)
+        if (/^\d+$/.test(contenu)) {
+          t.style.display = 'none';
+        }
       });
     }
 
@@ -281,7 +283,7 @@
         const divSvg = document.getElementById('svg-plan');
         divSvg.innerHTML = await svgResponse.text();
 
-        // Masquer les numéros d'origine dès le chargement du SVG
+        // Masquer UNIQUEMENT les numéros purs (ex: "1", "2") au chargement
         masquerNumerosDuSVG(divSvg);
 
         initialiserTables();
@@ -379,7 +381,6 @@
         el.classList.remove('active');
       });
 
-      // Supprimer uniquement les noms générés dynamiquement
       document.querySelectorAll('.nom-table-svg').forEach(el => el.remove());
     }
 
@@ -402,7 +403,7 @@
         return;
       }
 
-      // 1. Masquer explicitement tout texte d'origine dans la table sélectionnée
+      // 1. Masquer uniquement le numéro présent dans cette table
       masquerNumerosDuSVG(el);
 
       // 2. Activer la couleur jaune
@@ -514,7 +515,6 @@
         texte.appendChild(tspan);
       });
 
-      // Ajout du nom de la table
       el.appendChild(texte);
 
       const nomLibelle = nomsDesTables[tableNum] ? `Table ${nomsDesTables[tableNum]}` : `Table ${tableNum}`;
