@@ -143,26 +143,10 @@
        STYLES DES TABLES
        ========================================== */
 
-    /*
-      Ces styles servent principalement lorsque
-      le SVG est chargé dynamiquement.
-      Les styles principaux des cercles sont
-      définis dans plan.svg.
-    */
-
     .table-group {
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
-
-    /*
-      TABLE SÉLECTIONNÉE
-
-      Important :
-      Le plan.svg contient également cette règle.
-      Elle est répétée ici comme sécurité.
-    */
 
     .table-group.active .t {
       fill: #D4A017 !important;
@@ -170,9 +154,7 @@
       stroke-width: 4 !important;
     }
 
-
     /* Nom de table affiché dans le cercle */
-
     .nom-table-svg {
       font-family: Arial, sans-serif;
       font-weight: bold;
@@ -385,14 +367,14 @@
       try {
 
         /*
-          Chargement simultané :
-          - invites.json
-          - plan.svg
+          Chargement simultané avec anti-cache pour mobile
         */
 
+        const timestamp = Date.now();
+
         const [donneesResponse, svgResponse] = await Promise.all([
-          fetch('invites.json'),
-          fetch('plan.svg')
+          fetch(`invites.json?v=${timestamp}`),
+          fetch(`plan.svg?v=${timestamp}`)
         ]);
 
 
@@ -418,15 +400,21 @@
 
         /* Injection SVG */
 
-        document.getElementById('svg-plan').innerHTML =
-          await svgResponse.text();
-
+        const divSvg = document.getElementById('svg-plan');
+        divSvg.innerHTML = await svgResponse.text();
 
         /*
-          IMPORTANT
+          MASQUAGE INITIAL DES NUMÉROS DE TABLE EN DÉBUT
+        */
+        const svgElement = divSvg.querySelector('svg');
+        if (svgElement) {
+          svgElement.querySelectorAll('text').forEach(t => {
+            t.style.display = 'none';
+          });
+        }
 
-          On initialise seulement APRÈS
-          avoir chargé le JSON et le SVG.
+        /*
+          Initialisation des états
         */
 
         initialiserTables();
@@ -474,10 +462,6 @@
 
         if (table) {
 
-          /*
-            Supprime toute ancienne sélection
-          */
-
           table.classList.remove(
             'active',
             'complete'
@@ -508,11 +492,6 @@
       const divResultat =
         document.getElementById('resultat');
 
-
-      /*
-        À chaque nouvelle recherche,
-        on remet le plan à zéro.
-      */
 
       reinitialiserSelection();
 
@@ -638,16 +617,8 @@
 
     function selectionnerInvite(nom, tableNum) {
 
-      /*
-        Masquer la liste des résultats
-      */
-
       document.getElementById('resultat').innerHTML = "";
 
-
-      /*
-        Afficher l'invité sélectionné
-      */
 
       document
         .getElementById(
@@ -663,10 +634,6 @@
         .style.display = 'block';
 
 
-      /*
-        Mettre la table en évidence
-      */
-
       surlignerTable(tableNum);
 
     }
@@ -679,20 +646,12 @@
 
     function reinitialiserSelection() {
 
-      /*
-        Masquer l'invité sélectionné
-      */
-
       document
         .getElementById(
           'zone-selection'
         )
         .style.display = 'none';
 
-
-      /*
-        Retirer le jaune de toutes les tables
-      */
 
       document
         .querySelectorAll(
@@ -704,11 +663,6 @@
 
         });
 
-
-      /*
-        Supprimer les noms ajoutés
-        dynamiquement dans le SVG
-      */
 
       document
         .querySelectorAll(
@@ -726,11 +680,6 @@
 
     function surlignerTable(tableNum) {
 
-      /*
-        Sécurité :
-        retirer toute sélection précédente
-      */
-
       document
         .querySelectorAll(
           '.table-group.active'
@@ -742,20 +691,12 @@
         });
 
 
-      /*
-        Supprimer ancien nom affiché
-      */
-
       document
         .querySelectorAll(
           '.nom-table-svg'
         )
         .forEach(t => t.remove());
 
-
-      /*
-        Trouver le groupe SVG correspondant
-      */
 
       const el =
         document.getElementById(
@@ -775,20 +716,15 @@
 
 
       /*
-        ====================================
-        AJOUT DE LA CLASSE ACTIVE
-
-        C'est cette ligne qui déclenche
-        la couleur jaune dans plan.svg
-        ====================================
+        MASQUAGE DES ANCIENS TEXTES/NUMÉROS DANS LA TABLE SÉLECTIONNÉE
       */
+      el.querySelectorAll('text:not(.nom-table-svg)').forEach(t => {
+        t.style.display = 'none';
+      });
+
 
       el.classList.add('active');
 
-
-      /*
-        Trouver le cercle
-      */
 
       const circle =
         el.querySelector('circle');
@@ -796,10 +732,6 @@
 
       if (!circle) return;
 
-
-      /*
-        Coordonnées du cercle
-      */
 
       const cx =
         parseFloat(
@@ -819,19 +751,10 @@
         );
 
 
-      /*
-        Récupération du nom de table
-      */
-
       const nomTable =
         nomsDesTables[tableNum]
         || `Table ${tableNum}`;
 
-
-      /*
-        Canvas temporaire pour mesurer
-        la largeur des textes
-      */
 
       const canvas =
         document.createElement('canvas');
@@ -854,11 +777,6 @@
       }
 
 
-      /*
-        Largeur maximale disponible
-        dans le cercle
-      */
-
       const largeurDisponible =
         radius * 2 - 12;
 
@@ -872,18 +790,10 @@
       const candidats = [];
 
 
-      /*
-        Une seule ligne
-      */
-
       candidats.push([
         nomTable
       ]);
 
-
-      /*
-        Deux lignes possibles
-      */
 
       if (mots.length >= 2) {
 
@@ -909,10 +819,6 @@
 
       }
 
-
-      /*
-        Trois lignes possibles
-      */
 
       if (mots.length >= 3) {
 
@@ -950,12 +856,6 @@
 
       }
 
-
-      /*
-        ======================================
-        CHOIX DU MEILLEUR DÉCOUPAGE
-        ======================================
-      */
 
       let meilleur = null;
 
@@ -1005,10 +905,6 @@
           tailleBase * facteur;
 
 
-        /*
-          Trop petit = rejeté
-        */
-
         if (taille < 5) return;
 
 
@@ -1051,10 +947,6 @@
       });
 
 
-      /*
-        Sécurité
-      */
-
       if (!meilleur) {
 
         meilleur = {
@@ -1065,12 +957,6 @@
 
       }
 
-
-      /*
-        ======================================
-        CRÉATION DU TEXTE SVG
-        ======================================
-      */
 
       const texte =
         document.createElementNS(
@@ -1127,11 +1013,6 @@
       );
 
 
-      /*
-        Texte noir pour contraste
-        avec le jaune doré
-      */
-
       texte.setAttribute(
         'fill',
         '#000000'
@@ -1143,10 +1024,6 @@
         'none'
       );
 
-
-      /*
-        Position verticale des lignes
-      */
 
       let positions;
 
@@ -1195,12 +1072,6 @@
       }
 
 
-      /*
-        ======================================
-        AJOUT DES LIGNES
-        ======================================
-      */
-
       meilleur.lignes.forEach(
         (ligne, index) => {
 
@@ -1228,10 +1099,6 @@
             'middle'
           );
 
-
-          /*
-            Ajuster si nécessaire
-          */
 
           const largeur =
             largeurTexte(
@@ -1268,19 +1135,9 @@
       );
 
 
-      /*
-        Ajouter le nom dans la table
-      */
-
+      /* Ajouter le texte du nom de la table */
       el.appendChild(texte);
 
-
-      /*
-        ======================================
-        AFFICHAGE DU NOM DE TABLE
-        SOUS L'INVITÉ
-        ======================================
-      */
 
       const nomLibelle =
         nomsDesTables[tableNum]
