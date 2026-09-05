@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900">
+
+<defs>
+
+<radialGradient id="tableGrad">
+<stop offset="0%" stop-color="#2EA8D7"/>
+<stop offset="100%" stop-color="#0078A7"/>
+</radialGradient>
+
+<filter id="shadow">
+<feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+</filter>
+
+<marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#E74C3C" />
+</marker>
+
+</defs>
+
+<style>
+
+.t{
+fill:url(#tableGrad);
+stroke:#005A9E;
+stroke-width:3;
+filter:url(#shadow);
+}
+
+.num{
+fill:white;
+font-family:Segoe UI,Arial,sans-serif;
+font-size:18px;
+font-weight:bold;
+text-anchor:middle;
+dominant-baseline:middle;
+}
+
+.label{
+font-family:Segoe UI,Arial,sans-serif;
+font-weight:bold;
+fill:#222;
+font-size:28px;
+}
+
+.label-entree{
+font-family:Segoe UI,Arial,sans-serif;
+font-weight:bold;
+fill:#E74C3C;
+font-size:22px;
+}
+
+</style>
+
+<!-- CONTOUR DE LA SALLE -->
+<rect x="10" y="10" width="1380" height="880" fill="#fafafa" stroke="#444" stroke-width="2"/>
+
+<!-- BUFFET 1 -->
+<rect x="40" y="80" width="200" height="50" fill="white" stroke="#555"/>
+<text x="140" y="115" text-anchor="middle" class="label">BUFFET 1</text>
+
+<!-- BUFFET 2 -->
+<rect x="40" y="750" width="200" height="50" fill="white" stroke="#555"/>
+<text x="140" y="785" text-anchor="middle" class="label">BUFFET 2</text>
+
+<!-- ARCHE -->
+<path d="M1210 60 A180 180 0 0 1 1390 240" fill="none" stroke="#444" stroke-width="3"/>
+<text x="1230" y="90" class="label">ARCHE</text>
+
+<!-- FRANCK -->
+<rect x="1260" y="270" width="65" height="180" fill="white" stroke="#444"/>
+<text transform="rotate(90 1292 360)" x="1292" y="360" text-anchor="middle" class="label">FRANCK</text>
+
+<!-- ALLÉE (AJUSTÉE POUR COMMENCER AU MUR DU BAS SANS DÉPASSER) -->
+<path d="M460 845 L460 470 L840 470" fill="none" stroke="#D9E6F2" stroke-width="90" stroke-linecap="square"/>
+
+<!-- PISTE DE DANSE -->
+<rect x="840" y="380" width="220" height="180" rx="12" fill="#E8EEF5" stroke="#95A5A6"/>
+<text x="950" y="452" text-anchor="middle" class="label" font-size="26">PISTE</text>
+<text x="950" y="498" text-anchor="middle" class="label" font-size="26">DE DANSE</text>
+
+<!-- ENTRÉE (TEXTE ET FLÈCHE orientée du bas vers le haut) -->
+<g transform="translate(442, 785) rotate(-90)">
+<text x="0" y="0" text-anchor="middle" class="label-entree">ENTRÉE</text>
+</g>
+<path d="M 470 875 L 470 670" stroke="#E74C3C" stroke-width="6" fill="none" marker-end="url(#arrowhead)" />
+
+<!-- DJ -->
+<g transform="translate(1240 760) rotate(-40)">
+<rect width="110" height="60" fill="white" stroke="#444"/>
+<text x="55" y="40" text-anchor="middle" class="label">DJ</text>
+</g>
+
+<!-- COLONNE 28 29 30 -->
+<g id="svg-table-28"><circle class="t" cx="460" cy="120" r="42"/><text class="num" x="460" y="120">28</text></g>
+<g id="svg-table-29"><circle class="t" cx="460" cy="220" r="42"/><text class="num" x="460" y="220">29</text></g>
+<g id="svg-table-30"><circle class="t" cx="460" cy="320" r="42"/><text class="num" x="460" y="320">30</text></g>
+
+<!-- COLONNE 27 26 31 -->
+<g id="svg-table-27"><circle class="t" cx="600" cy="120" r="42"/><text class="num" x="600" y="120">27</text></g>
+<g id="svg-table-26"><circle class="t" cx="600" cy="220" r="42"/><text class="num" x="600" y="220">26</text></g>
+<g id="svg-table-31"><circle class="t" cx="600" cy="320" r="42"/><text class="num" x="600" y="320">31</text></g>
+
+<!-- COLONNE 25 24 32 -->
+<g id="svg-table-25"><circle class="t" cx="740" cy="120" r="42"/><text class="num" x="740" y="120">25</text></g>
+<g id="svg-table-24"><circle class="t" cx="740" cy="220" r="42"/><text class="num" x="740" y="220">24</text></g>
+<g id="svg-table-32"><circle class="t" cx="740" cy="320" r="42"/><text class="num" x="740" y="320">32</text></g>
+
+<!-- COLONNE 23 22 -->
+<g id="svg-table-23"><circle class="t" cx="880" cy="120" r="42"/><text class="num" x="880" y="120">23</text></g>
+<g id="svg-table-22"><circle class="t" cx="880" cy="220" r="42"/><text class="num" x="880" y="220">22</text></g>
+
+<!-- COLONNE 21 20 -->
+<g id="svg-table-21"><circle class="t" cx="1020" cy="120" r="42"/><text class="num" x="1020" y="120">21</text></g>
+<g id="svg-table-20"><circle class="t" cx="1020" cy="220" r="42"/><text class="num" x="1020" y="220">20</text></g>
+
+<!-- COLONNE 19 18 -->
+<g id="svg-table-19"><circle class="t" cx="1160" cy="120" r="42"/><text class="num" x="1160" y="120">19</text></g>
+<g id="svg-table-18"><circle class="t" cx="1160" cy="220" r="42"/><text class="num" x="1160" y="220">18</text></g>
+
+<!-- BLOC GAUCHE (14, 13, 12, 17, 11) -->
+<g id="svg-table-14"><circle class="t" cx="310" cy="210" r="42"/><text class="num" x="310" y="210">14</text></g>
+<g id="svg-table-13"><circle class="t" cx="210" cy="300" r="42"/><text class="num" x="210" y="300">13</text></g>
+<g id="svg-table-12"><circle class="t" cx="310" cy="390" r="42"/><text class="num" x="310" y="390">12</text></g>
+<g id="svg-table-17"><circle class="t" cx="210" cy="475" r="42"/><text class="num" x="210" y="475">17</text></g>
+<g id="svg-table-11"><circle class="t" cx="310" cy="560" r="42"/><text class="num" x="310" y="560">11</text></g>
+
+<!-- ALIGNÉES SOUS 27-26-31 -->
+<g id="svg-table-16"><circle class="t" cx="600" cy="580" r="42"/><text class="num" x="600" y="580">16</text></g>
+<g id="svg-table-10"><circle class="t" cx="600" cy="690" r="42"/><text class="num" x="600" y="690">10</text></g>
+<g id="svg-table-5"><circle class="t" cx="600" cy="810" r="42"/><text class="num" x="600" y="810">5</text></g>
+
+<!-- ALIGNÉES SOUS 25-24-32 -->
+<g id="svg-table-15"><circle class="t" cx="740" cy="580" r="42"/><text class="num" x="740" y="580">15</text></g>
+<g id="svg-table-9"><circle class="t" cx="740" cy="690" r="42"/><text class="num" x="740" y="690">9</text></g>
+<g id="svg-table-4"><circle class="t" cx="740" cy="810" r="42"/><text class="num" x="740" y="810">4</text></g>
+
+<!-- COLONNES BAS DROITE -->
+<g id="svg-table-8"><circle class="t" cx="880" cy="690" r="42"/><text class="num" x="880" y="690">8</text></g>
+<g id="svg-table-3"><circle class="t" cx="880" cy="810" r="42"/><text class="num" x="880" y="810">3</text></g>
+
+<g id="svg-table-7"><circle class="t" cx="1020" cy="690" r="42"/><text class="num" x="1020" y="690">7</text></g>
+<g id="svg-table-2"><circle class="t" cx="1020" cy="810" r="42"/><text class="num" x="1020" y="810">2</text></g>
+
+<g id="svg-table-6"><circle class="t" cx="1160" cy="690" r="42"/><text class="num" x="1160" y="690">6</text></g>
+<g id="svg-table-1"><circle class="t" cx="1160" cy="810" r="42"/><text class="num" x="1160" y="810">1</text></g>
+
+</svg>
