@@ -166,107 +166,35 @@
 
 
     /* ==========================================
-       RESPONSIVE TABLETTE
+       RESPONSIVE TABLETTE & MOBILE
        ========================================== */
 
     @media (max-width: 900px) {
-
-      body {
-        padding: 15px;
-      }
-
-      .layout {
-        flex-direction: column;
-      }
-
-      .panneau-plan {
-        order: 1;
-        width: 100%;
-        min-width: 0;
-      }
-
-      .panneau:not(.panneau-plan) {
-        order: 2;
-        width: 100%;
-        min-width: 0;
-      }
-
-      .panneau {
-        width: 100%;
-      }
+      body { padding: 15px; }
+      .layout { flex-direction: column; }
+      .panneau-plan { order: 1; width: 100%; min-width: 0; }
+      .panneau:not(.panneau-plan) { order: 2; width: 100%; min-width: 0; }
+      .panneau { width: 100%; }
     }
-
-
-    /* ==========================================
-       RESPONSIVE MOBILE
-       ========================================== */
 
     @media (max-width: 600px) {
-
-      body {
-        padding: 8px;
-      }
-
-      h1 {
-        font-size: 20px;
-        margin-bottom: 12px;
-      }
-
-      .panneau {
-        padding: 12px;
-        border-radius: 10px;
-      }
-
-      .panneau-plan {
-        padding: 8px;
-      }
-
-      h2 {
-        font-size: 17px;
-      }
-
-      .carte-resultat {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .carte-resultat .btn-select {
-        width: 100%;
-        padding: 10px;
-      }
-
-      .invite-selectionne-box {
-        padding: 12px;
-      }
-
-      svg {
-        width: 100%;
-        height: auto;
-      }
+      body { padding: 8px; }
+      h1 { font-size: 20px; margin-bottom: 12px; }
+      .panneau { padding: 12px; border-radius: 10px; }
+      .panneau-plan { padding: 8px; }
+      h2 { font-size: 17px; }
+      .carte-resultat { align-items: stretch; flex-direction: column; }
+      .carte-resultat .btn-select { width: 100%; padding: 10px; }
+      .invite-selectionne-box { padding: 12px; }
+      svg { width: 100%; height: auto; }
     }
 
-
     @media (max-width: 400px) {
-
-      body {
-        padding: 5px;
-      }
-
-      .panneau {
-        padding: 10px;
-      }
-
-      .panneau-plan {
-        padding: 5px;
-      }
-
-      h1 {
-        font-size: 18px;
-      }
-
-      input {
-        font-size: 15px;
-      }
+      body { padding: 5px; }
+      .panneau { padding: 10px; }
+      .panneau-plan { padding: 5px; }
+      h1 { font-size: 18px; }
+      input { font-size: 15px; }
     }
 
   </style>
@@ -278,98 +206,63 @@
 
   <h1>Plan de la salle</h1>
 
-
   <div class="layout">
 
-
-    <!-- ======================================
-         PANNEAU RECHERCHE
-         ====================================== -->
-
+    <!-- PANNEAU RECHERCHE -->
     <div class="panneau">
-
       <h2>Trouver ma table</h2>
-
-      <input
-        type="text"
-        id="recherche"
-        placeholder="Tapez votre nom..."
-        oninput="chercher()"
-      >
-
+      <input type="text" id="recherche" placeholder="Tapez votre nom..." oninput="chercher()">
       <div id="resultat"></div>
 
-
       <!-- INVITÉ SÉLECTIONNÉ -->
-
-      <div
-        id="zone-selection"
-        style="display:none;"
-        class="invite-selectionne-box"
-      >
-
-        <small style="color:#005f9e;font-weight:bold;">
-          Invité sélectionné :
-        </small>
-
-        <div
-          style="font-size:18px;font-weight:bold;margin:5px 0;"
-          id="nom-invite-selectionne"
-        ></div>
-
-        <div
-          style="color:#555;"
-          id="table-invite-selectionne"
-        ></div>
-
+      <div id="zone-selection" style="display:none;" class="invite-selectionne-box">
+        <small style="color:#005f9e;font-weight:bold;">Invité sélectionné :</small>
+        <div style="font-size:18px;font-weight:bold;margin:5px 0;" id="nom-invite-selectionne"></div>
+        <div style="color:#555;" id="table-invite-selectionne"></div>
       </div>
-
     </div>
 
-
-
-    <!-- ======================================
-         PLAN DE LA SALLE
-         ====================================== -->
-
+    <!-- PLAN DE LA SALLE -->
     <div class="panneau panneau-plan">
-
       <h2>Bienvenue au mariage de Gertie & Gallimard</h2>
-
       <div class="svg-container">
         <div id="svg-plan"></div>
       </div>
-
     </div>
-
 
   </div>
 
 
-
   <script>
-
-    /* ==========================================
-       DONNÉES
-       ========================================== */
 
     let nomsDesTables = {};
     let donneesJSON = {};
 
+    /* ==========================================
+       FONCTION : NETTOYER LES NUMÉROS DU SVG
+       ========================================== */
+    function masquerNumerosDuSVG(elementConteneur) {
+      if (!elementConteneur) return;
+      
+      // On cherche tous les textes dans les groupes de tables
+      const tousLesTextes = elementConteneur.querySelectorAll('.table-group text, g[id*="table"] text');
+      
+      tousLesTextes.forEach(t => {
+        // Ne pas toucher aux noms de table ajoutés dynamiquement
+        if (t.classList.contains('nom-table-svg')) return;
+        
+        // Masquer le texte s'il contient un numéro ou s'il est au centre du cercle
+        t.style.display = 'none';
+        t.style.visibility = 'hidden';
+      });
+    }
 
 
     /* ==========================================
        INITIALISATION APPLICATION
        ========================================== */
-
     async function initialiserApplication() {
-
       try {
-
-        /*
-          Chargement simultané avec anti-cache pour mobile
-        */
-
         const timestamp = Date.now();
 
         const [donneesResponse, svgResponse] = await Promise.all([
@@ -377,793 +270,262 @@
           fetch(`plan.svg?v=${timestamp}`)
         ]);
 
-
         if (!donneesResponse.ok || !svgResponse.ok) {
-
-          throw new Error(
-            'Impossible de charger les fichiers de l’application.'
-          );
-
+          throw new Error('Impossible de charger les fichiers de l’application.');
         }
 
-
-        /* Chargement JSON */
-
         const donnees = await donneesResponse.json();
-
-        nomsDesTables =
-          donnees.nomsDesTables || {};
-
-        donneesJSON =
-          donnees.invites || {};
-
-
-        /* Injection SVG */
+        nomsDesTables = donnees.nomsDesTables || {};
+        donneesJSON = donnees.invites || {};
 
         const divSvg = document.getElementById('svg-plan');
         divSvg.innerHTML = await svgResponse.text();
 
-        /*
-          MASQUAGE INITIAL DES NUMÉROS DE TABLE EN DÉBUT
-        */
-        const svgElement = divSvg.querySelector('svg');
-        if (svgElement) {
-          svgElement.querySelectorAll('text').forEach(t => {
-            t.style.display = 'none';
-          });
-        }
-
-        /*
-          Initialisation des états
-        */
+        // Masquer les numéros d'origine dès le chargement du SVG
+        masquerNumerosDuSVG(divSvg);
 
         initialiserTables();
-
       }
-
       catch (error) {
-
         console.error(error);
-
-        document.getElementById('svg-plan').innerHTML =
-          `
-          <p style="
-            color:#c0392b;
-            font-weight:bold;
-            padding:20px;
-          ">
+        document.getElementById('svg-plan').innerHTML = `
+          <p style="color:#c0392b;font-weight:bold;padding:20px;">
             Erreur lors du chargement du plan ou des invités.
-          </p>
-          `;
-
+          </p>`;
       }
-
     }
-
 
 
     /* ==========================================
        INITIALISATION DES TABLES
        ========================================== */
-
     function initialiserTables() {
-
       Object.keys(donneesJSON).forEach(key => {
-
-        const tableNum =
-          key.replace('Table ', '');
-
-
-        const table =
-          document.getElementById(
-            `svg-table-${tableNum}`
-          );
-
-
+        const tableNum = key.replace('Table ', '');
+        const table = document.getElementById(`svg-table-${tableNum}`);
         if (table) {
-
-          table.classList.remove(
-            'active',
-            'complete'
-          );
-
+          table.classList.remove('active', 'complete');
         }
-
       });
-
     }
-
 
 
     /* ==========================================
        RECHERCHE INVITÉ
        ========================================== */
-
     function chercher() {
-
-      const query =
-        document
-          .getElementById('recherche')
-          .value
-          .toLowerCase()
-          .trim();
-
-
-      const divResultat =
-        document.getElementById('resultat');
-
+      const query = document.getElementById('recherche').value.toLowerCase().trim();
+      const divResultat = document.getElementById('resultat');
 
       reinitialiserSelection();
 
-
       if (query === "") {
-
         divResultat.innerHTML = "";
-
         return;
-
       }
-
 
       let trouves = [];
 
-
       Object.keys(donneesJSON).forEach(key => {
-
-        const tableNum =
-          parseInt(
-            key.replace('Table ', '')
-          );
-
-
-        const guests =
-          donneesJSON[key];
-
+        const tableNum = parseInt(key.replace('Table ', ''));
+        const guests = donneesJSON[key];
 
         guests.forEach(nom => {
-
-          if (
-            nom
-              .toLowerCase()
-              .includes(query)
-          ) {
-
-            trouves.push({
-              nom: nom,
-              tableNum: tableNum
-            });
-
+          if (nom.toLowerCase().includes(query)) {
+            trouves.push({ nom: nom, tableNum: tableNum });
           }
-
         });
-
       });
 
-
-
-      /* ======================================
-         AFFICHAGE DES RÉSULTATS
-         ====================================== */
-
       if (trouves.length > 0) {
-
-        divResultat.innerHTML =
-          trouves.map(i => {
-
-
-            const nomTable =
-              nomsDesTables[i.tableNum]
-                ? nomsDesTables[i.tableNum]
-                : `Table ${i.tableNum}`;
-
-
-            return `
-
-              <div class="carte-resultat">
-
-                <div>
-
-                  <strong>
-                    ${i.nom}
-                  </strong>
-
-                  <br>
-
-                  <small>
-                    Table ${nomTable}
-                  </small>
-
-                </div>
-
-
-                <button
-                  class="btn-action btn-select"
-                  onclick="selectionnerInvite(
-                    '${i.nom.replace(/'/g, "\\'")}',
-                    ${i.tableNum}
-                  )"
-                >
-
-                  Voir ma table
-
-                </button>
-
+        divResultat.innerHTML = trouves.map(i => {
+          const nomTable = nomsDesTables[i.tableNum] ? nomsDesTables[i.tableNum] : `Table ${i.tableNum}`;
+          return `
+            <div class="carte-resultat">
+              <div>
+                <strong>${i.nom}</strong><br>
+                <small>Table ${nomTable}</small>
               </div>
-
-            `;
-
-          }).join("");
-
+              <button class="btn-action btn-select" onclick="selectionnerInvite('${i.nom.replace(/'/g, "\\'")}', ${i.tableNum})">
+                Voir ma table
+              </button>
+            </div>`;
+        }).join("");
+      } else {
+        divResultat.innerHTML = `<p style="color:#7f8c8d;">Aucun invité trouvé</p>`;
       }
-
-      else {
-
-        divResultat.innerHTML =
-          `
-          <p style="color:#7f8c8d;">
-            Aucun invité trouvé
-          </p>
-          `;
-
-      }
-
     }
-
 
 
     /* ==========================================
        SÉLECTION D'UN INVITÉ
        ========================================== */
-
     function selectionnerInvite(nom, tableNum) {
-
       document.getElementById('resultat').innerHTML = "";
-
-
-      document
-        .getElementById(
-          'nom-invite-selectionne'
-        )
-        .innerText = nom;
-
-
-      document
-        .getElementById(
-          'zone-selection'
-        )
-        .style.display = 'block';
-
+      document.getElementById('nom-invite-selectionne').innerText = nom;
+      document.getElementById('zone-selection').style.display = 'block';
 
       surlignerTable(tableNum);
-
     }
-
 
 
     /* ==========================================
        RÉINITIALISATION
        ========================================== */
-
     function reinitialiserSelection() {
+      document.getElementById('zone-selection').style.display = 'none';
 
-      document
-        .getElementById(
-          'zone-selection'
-        )
-        .style.display = 'none';
+      document.querySelectorAll('.table-group.active').forEach(el => {
+        el.classList.remove('active');
+      });
 
-
-      document
-        .querySelectorAll(
-          '.table-group.active'
-        )
-        .forEach(el => {
-
-          el.classList.remove('active');
-
-        });
-
-
-      document
-        .querySelectorAll(
-          '.nom-table-svg'
-        )
-        .forEach(el => el.remove());
-
+      // Supprimer uniquement les noms générés dynamiquement
+      document.querySelectorAll('.nom-table-svg').forEach(el => el.remove());
     }
-
 
 
     /* ==========================================
        SURBRILLANCE DE LA TABLE
        ========================================== */
-
     function surlignerTable(tableNum) {
 
-      document
-        .querySelectorAll(
-          '.table-group.active'
-        )
-        .forEach(el => {
-
-          el.classList.remove('active');
-
-        });
-
-
-      document
-        .querySelectorAll(
-          '.nom-table-svg'
-        )
-        .forEach(t => t.remove());
-
-
-      const el =
-        document.getElementById(
-          `svg-table-${tableNum}`
-        );
-
-
-      if (!el) {
-
-        console.warn(
-          `Table ${tableNum} introuvable dans le SVG`
-        );
-
-        return;
-
-      }
-
-
-      /*
-        MASQUAGE DES ANCIENS TEXTES/NUMÉROS DANS LA TABLE SÉLECTIONNÉE
-      */
-      el.querySelectorAll('text:not(.nom-table-svg)').forEach(t => {
-        t.style.display = 'none';
+      document.querySelectorAll('.table-group.active').forEach(el => {
+        el.classList.remove('active');
       });
 
+      document.querySelectorAll('.nom-table-svg').forEach(t => t.remove());
 
+      const el = document.getElementById(`svg-table-${tableNum}`);
+
+      if (!el) {
+        console.warn(`Table ${tableNum} introuvable dans le SVG`);
+        return;
+      }
+
+      // 1. Masquer explicitement tout texte d'origine dans la table sélectionnée
+      masquerNumerosDuSVG(el);
+
+      // 2. Activer la couleur jaune
       el.classList.add('active');
 
-
-      const circle =
-        el.querySelector('circle');
-
-
+      const circle = el.querySelector('circle');
       if (!circle) return;
 
+      const cx = parseFloat(circle.getAttribute('cx'));
+      const cy = parseFloat(circle.getAttribute('cy'));
+      const radius = parseFloat(circle.getAttribute('r'));
 
-      const cx =
-        parseFloat(
-          circle.getAttribute('cx')
-        );
+      const nomTable = nomsDesTables[tableNum] || `Table ${tableNum}`;
 
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
 
-      const cy =
-        parseFloat(
-          circle.getAttribute('cy')
-        );
-
-
-      const radius =
-        parseFloat(
-          circle.getAttribute('r')
-        );
-
-
-      const nomTable =
-        nomsDesTables[tableNum]
-        || `Table ${tableNum}`;
-
-
-      const canvas =
-        document.createElement('canvas');
-
-
-      const ctx =
-        canvas.getContext('2d');
-
-
-      function largeurTexte(
-        texte,
-        taille
-      ) {
-
-        ctx.font =
-          `bold ${taille}px Arial`;
-
+      function largeurTexte(texte, taille) {
+        ctx.font = `bold ${taille}px Arial`;
         return ctx.measureText(texte).width;
-
       }
 
-
-      const largeurDisponible =
-        radius * 2 - 12;
-
-
-      const mots =
-        nomTable
-          .trim()
-          .split(/\s+/);
-
-
+      const largeurDisponible = radius * 2 - 12;
+      const mots = nomTable.trim().split(/\s+/);
       const candidats = [];
 
-
-      candidats.push([
-        nomTable
-      ]);
-
+      candidats.push([nomTable]);
 
       if (mots.length >= 2) {
-
-        for (
-          let i = 1;
-          i < mots.length;
-          i++
-        ) {
-
+        for (let i = 1; i < mots.length; i++) {
           candidats.push([
-
-            mots
-              .slice(0, i)
-              .join(' '),
-
-            mots
-              .slice(i)
-              .join(' ')
-
+            mots.slice(0, i).join(' '),
+            mots.slice(i).join(' ')
           ]);
-
         }
-
       }
-
 
       if (mots.length >= 3) {
-
-        for (
-          let i = 1;
-          i < mots.length - 1;
-          i++
-        ) {
-
-          for (
-            let j = i + 1;
-            j < mots.length;
-            j++
-          ) {
-
+        for (let i = 1; i < mots.length - 1; i++) {
+          for (let j = i + 1; j < mots.length; j++) {
             candidats.push([
-
-              mots
-                .slice(0, i)
-                .join(' '),
-
-              mots
-                .slice(i, j)
-                .join(' '),
-
-              mots
-                .slice(j)
-                .join(' ')
-
+              mots.slice(0, i).join(' '),
+              mots.slice(i, j).join(' '),
+              mots.slice(j).join(' ')
             ]);
-
           }
-
         }
-
       }
-
 
       let meilleur = null;
 
-
       candidats.forEach(lignes => {
-
-        let tailleBase;
-
-
-        if (lignes.length === 1) {
-
-          tailleBase = 12;
-
-        }
-
-        else if (lignes.length === 2) {
-
-          tailleBase = 10;
-
-        }
-
-        else {
-
-          tailleBase = 8;
-
-        }
-
-
-        const largeurMax =
-          Math.max(
-            ...lignes.map(
-              l => largeurTexte(
-                l,
-                tailleBase
-              )
-            )
-          );
-
-
-        const facteur =
-          largeurMax > largeurDisponible
-            ? largeurDisponible / largeurMax
-            : 1;
-
-
-        const taille =
-          tailleBase * facteur;
-
+        let tailleBase = lignes.length === 1 ? 12 : (lignes.length === 2 ? 10 : 8);
+        const largeurMax = Math.max(...lignes.map(l => largeurTexte(l, tailleBase)));
+        const facteur = largeurMax > largeurDisponible ? largeurDisponible / largeurMax : 1;
+        const taille = tailleBase * facteur;
 
         if (taille < 5) return;
 
+        const longueurs = lignes.map(l => l.length);
+        const ecart = Math.max(...longueurs) - Math.min(...longueurs);
+        const score = taille - ecart * 0.008 - (lignes.length - 1) * 0.05;
 
-        const longueurs =
-          lignes.map(
-            l => l.length
-          );
-
-
-        const ecart =
-          Math.max(...longueurs)
-          -
-          Math.min(...longueurs);
-
-
-        const score =
-          taille
-          -
-          ecart * 0.008
-          -
-          (lignes.length - 1) * 0.05;
-
-
-        if (
-          !meilleur
-          ||
-          score > meilleur.score
-        ) {
-
-          meilleur = {
-
-            lignes: lignes,
-            taille: taille,
-            score: score
-
-          };
-
+        if (!meilleur || score > meilleur.score) {
+          meilleur = { lignes: lignes, taille: taille, score: score };
         }
-
       });
 
-
       if (!meilleur) {
-
-        meilleur = {
-          lignes: [nomTable],
-          taille: 5,
-          score: 0
-        };
-
+        meilleur = { lignes: [nomTable], taille: 5, score: 0 };
       }
 
-
-      const texte =
-        document.createElementNS(
-          'http://www.w3.org/2000/svg',
-          'text'
-        );
-
-
-      texte.setAttribute(
-        'class',
-        'nom-table-svg'
-      );
-
-
-      texte.setAttribute(
-        'x',
-        cx
-      );
-
-
-      texte.setAttribute(
-        'y',
-        cy
-      );
-
-
-      texte.setAttribute(
-        'text-anchor',
-        'middle'
-      );
-
-
-      texte.setAttribute(
-        'dominant-baseline',
-        'middle'
-      );
-
-
-      texte.setAttribute(
-        'font-family',
-        'Arial, sans-serif'
-      );
-
-
-      texte.setAttribute(
-        'font-weight',
-        'bold'
-      );
-
-
-      texte.setAttribute(
-        'font-size',
-        meilleur.taille.toFixed(1)
-      );
-
-
-      texte.setAttribute(
-        'fill',
-        '#000000'
-      );
-
-
-      texte.setAttribute(
-        'pointer-events',
-        'none'
-      );
-
+      const texte = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      texte.setAttribute('class', 'nom-table-svg');
+      texte.setAttribute('x', cx);
+      texte.setAttribute('y', cy);
+      texte.setAttribute('text-anchor', 'middle');
+      texte.setAttribute('dominant-baseline', 'middle');
+      texte.setAttribute('font-family', 'Arial, sans-serif');
+      texte.setAttribute('font-weight', 'bold');
+      texte.setAttribute('font-size', meilleur.taille.toFixed(1));
+      texte.setAttribute('fill', '#000000');
+      texte.setAttribute('pointer-events', 'none');
 
       let positions;
-
-
-      if (
-        meilleur.lignes.length === 1
-      ) {
-
+      if (meilleur.lignes.length === 1) {
         positions = [cy];
-
+      } else if (meilleur.lignes.length === 2) {
+        const ecart = Math.max(5, meilleur.taille * 0.8);
+        positions = [cy - ecart, cy + ecart];
+      } else {
+        const ecart = Math.max(5, meilleur.taille * 1.1);
+        positions = [cy - ecart, cy, cy + ecart];
       }
 
-      else if (
-        meilleur.lignes.length === 2
-      ) {
+      meilleur.lignes.forEach((ligne, index) => {
+        const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', cx);
+        tspan.setAttribute('y', positions[index]);
+        tspan.setAttribute('text-anchor', 'middle');
 
-        const ecart =
-          Math.max(
-            5,
-            meilleur.taille * 0.8
-          );
-
-
-        positions = [
-          cy - ecart,
-          cy + ecart
-        ];
-
-      }
-
-      else {
-
-        const ecart =
-          Math.max(
-            5,
-            meilleur.taille * 1.1
-          );
-
-
-        positions = [
-          cy - ecart,
-          cy,
-          cy + ecart
-        ];
-
-      }
-
-
-      meilleur.lignes.forEach(
-        (ligne, index) => {
-
-          const tspan =
-            document.createElementNS(
-              'http://www.w3.org/2000/svg',
-              'tspan'
-            );
-
-
-          tspan.setAttribute(
-            'x',
-            cx
-          );
-
-
-          tspan.setAttribute(
-            'y',
-            positions[index]
-          );
-
-
-          tspan.setAttribute(
-            'text-anchor',
-            'middle'
-          );
-
-
-          const largeur =
-            largeurTexte(
-              ligne,
-              meilleur.taille
-            );
-
-
-          if (
-            largeur > largeurDisponible
-          ) {
-
-            tspan.setAttribute(
-              'textLength',
-              largeurDisponible.toFixed(1)
-            );
-
-
-            tspan.setAttribute(
-              'lengthAdjust',
-              'spacingAndGlyphs'
-            );
-
-          }
-
-
-          tspan.textContent =
-            ligne;
-
-
-          texte.appendChild(tspan);
-
+        const largeur = largeurTexte(ligne, meilleur.taille);
+        if (largeur > largeurDisponible) {
+          tspan.setAttribute('textLength', largeurDisponible.toFixed(1));
+          tspan.setAttribute('lengthAdjust', 'spacingAndGlyphs');
         }
-      );
 
+        tspan.textContent = ligne;
+        texte.appendChild(tspan);
+      });
 
-      /* Ajouter le texte du nom de la table */
+      // Ajout du nom de la table
       el.appendChild(texte);
 
-
-      const nomLibelle =
-        nomsDesTables[tableNum]
-          ? `Table ${nomsDesTables[tableNum]}`
-          : `Table ${tableNum}`;
-
-
-      document
-        .getElementById(
-          'table-invite-selectionne'
-        )
-        .innerText =
-          nomLibelle;
-
+      const nomLibelle = nomsDesTables[tableNum] ? `Table ${nomsDesTables[tableNum]}` : `Table ${tableNum}`;
+      document.getElementById('table-invite-selectionne').innerText = nomLibelle;
     }
-
 
 
     /* ==========================================
        DÉMARRAGE APPLICATION
        ========================================== */
-
-    document.addEventListener(
-      'DOMContentLoaded',
-      initialiserApplication
-    );
+    document.addEventListener('DOMContentLoaded', initialiserApplication);
 
   </script>
 
