@@ -1,0 +1,354 @@
+{
+  "nomsDesTables": {
+    "1": "KINDAMBA",
+    "2": "DONATIEN",
+    "3": "LOUDIMA",
+    "4": "NICIA",
+    "5": "MILAN",
+    "6": "MARIE-ANNE",
+    "7": "NKOUIKOU",
+    "8": "ANGELIQUE",
+    "9": "IKALOU",
+    "10": "BERTHE OG",
+    "11": "A. BITSINDOU",
+    "12": "IRÉNÉ",
+    "13": "MPASSA",
+    "14": "RAUZELDHE",
+    "15": "MONGO BISSAFI",
+    "16": "DIELH",
+    "17": "CAPE TOWN",
+    "18": "ROSE",
+    "19": "IMPERIAL",
+    "20": "PHILIPPE",
+    "21": "LA DAMBOU",
+    "22": "RHONDA",
+    "23": "LYCEE PN2",
+    "24": "FIDELE",
+    "25": "YEHSSI",
+    "26": "POLITECNICO",
+    "27": "UMNG",
+    "28": "SAINTE-FOY",
+    "29": "QUÉBEC",
+    "30": "BRAZZAVILLE",
+    "31": "U.LAVAL",
+    "32": "NKOLA"
+  },
+  "invites": {
+    "Table 1": [
+      "Christian KODIA",
+      "Madame KODIA",
+      "Cesaire Odilon MOUITY",
+      "Dorcas MOUITY",
+      "Haven KALOULOU",
+      "Anita KALOULOU",
+      "Dédé KIPEMOSSO",
+      "Brice NGOUAKA"
+    ],
+    "Table 2": [
+      "Thierry KINKONDA",
+      "Laetcia LOEMBE",
+      "Willy MOULHARI",
+      "Pamela MOULHARI",
+      "Pedro MABUANA",
+      "Espérance TCHISS-LOE",
+      "Destinée TCHIS-LOE",
+      "Ledrich BOUENDET"
+    ],
+    "Table 3": [
+      "Franck BATOUMA",
+      "Maria-Rose ELENGA",
+      "Aristide LOUNGOUMOUKA",
+      "Leslie MISSEBA",
+      "Lemadre TATI BISMATHS",
+      "Mecht LOUKOSSI",
+      "Ghislain MATONDO",
+      "Harna MATONDO"
+    ],
+    "Table 4": [
+      "Romuald OBESSA",
+      "Madame OBESSA",
+      "Orland ANGAT",
+      "Antonia SIFIERE",
+      "Anderson OUAMBA",
+      "Evie ILOUD",
+      "Nierey MOUKOUKOUMI",
+      "Farel MOUKOUKOUMI"
+    ],
+    "Table 5": [
+      "Mack Nel KIBANGOU",
+      "Étoile d'État",
+      "Abrahma MAKOSSO",
+      "Laurentine",
+      "Guy TATY",
+      "Clémence TATY",
+      "Kepler MOUAMI",
+      "Varta MICHE"
+    ],
+    "Table 6": [
+      "Bolt Yvon BOUMBA",
+      "Alice BOUMBA",
+      "Paul NKOKOLO",
+      "Bulandress KALA",
+      "Nely KALA",
+      "Tins MAVIOGHA",
+      "Pipexe MAVIOGHA",
+      "Stane MAHOUA"
+    ],
+    "Table 7": [
+      "Georges GOMA",
+      "Madame GOMA",
+      "Landry ILOUD",
+      "Bijoux ILOUD",
+      "Guy MOMBO",
+      "Gloria TSONY",
+      "Alban MASSIMBA",
+      "Aude MASSIMBA"
+    ],
+    "Table 8": [
+      "Jack BAUER",
+      "Larissa MALANDA",
+      "Carly BAKOUTOUKA",
+      "Grace NKANZA",
+      "Yonnel DESTIN",
+      "Lucreche JARELLE",
+      "Damou KAYA",
+      "Gladnie KAYA"
+    ],
+    "Table 9": [
+      "Idris Martin N'KOUNGA",
+      "Hortense LOUVOUELO",
+      "Jean Robert TCHIBINDA",
+      "Nathalie LOUVOUELO",
+      "Keven KAYILOU",
+      "Madame KAYILOU",
+      "Christmane MPOUELE",
+      "Papa Mapassa"
+    ],
+    "Table 10": [
+      "Steve TATY",
+      "Vianey TATY",
+      "Ryethe NDE",
+      "Rodrigue NGOT",
+      "Bijoux NGOT",
+      "Dimitri MAKELE",
+      "Favely MAKELE",
+      "Alix NDEMBI"
+    ],
+    "Table 11": [
+      "Fred MAPEYE",
+      "Danielle MAPEYE",
+      "Landry VANGA",
+      "Josiane VANGA",
+      "Elsa VANGA",
+      "ELLA VANGA",
+      "Hervé OPANA",
+      "Dominique OPANA"
+    ],
+    "Table 12": [
+      "Jude Destin SASSA",
+      "André DECLECK",
+      "Christellie MBEMBA",
+      "Carine BOUTSANA",
+      "Flore Bernarde NGAKESSI",
+      "Aria PANZOU-PEPE",
+      "Aubin LUNDGREN",
+      "Arafat SAIDOU"
+    ],
+    "Table 13": [
+      "Christ MBOUKOU",
+      "Nice MIYALOU",
+      "Jeric BECKER",
+      "Fredine",
+      "Florence valery EMESSIENE",
+      "Joel STEFFEN",
+      "Fifi ABEDI",
+      "Patrice ABEDI"
+    ],
+    "Table 14": [
+      "Landry KITANGA",
+      "Franck Martial SOUOPETAM",
+      "Pael MBOUNGOU",
+      "Ben CÉSAR",
+      "Déo-Gracias",
+      "Rodrigue MIHINDOU",
+      "Alain Jean Michel DERE",
+      "Guigo NIMI"
+    ],
+    "Table 15": [
+      "Emeda TSONO OKANDZI",
+      "Cornelie TSONO",
+      "Vivien MATINGOU",
+      "Mwassi MATINGOU",
+      "Roland MAKAYA",
+      "Belinda MAKOSOO",
+      "Ulrich IFOKO",
+      "Marie CAROLE"
+    ],
+    "Table 16": [
+      "Larson TATY",
+      "Hornela TATY",
+      "Eugene MAVOUNGOU",
+      "Christian SOUATY",
+      "Madame SOUATY",
+      "Yannich MAVINGA",
+      "Johan BALEKETA",
+      "Pricilia"
+    ],
+    "Table 17": [
+      "Cherif",
+      "Mamie",
+      "Nadège MBIKI",
+      "Adoleve MBIKI",
+      "Christine GAUTHIER",
+      "Bernard",
+      "Nadine MOSSELI",
+      "Ferry LOUNGA"
+    ],
+    "Table 18": [
+      "OG",
+      "Papa MAPEYE",
+      "Maman MAPEYE",
+      "Mado NIMI",
+      "Maman Marianne",
+      "Mady NIATY",
+      "Maman Annie",
+      "Henrielle"
+    ],
+    "Table 19": [
+      "Alexandre MIYALOU",
+      "Rachel",
+      "Maxime N'DOLLY",
+      "Alice IBIATSI",
+      "Chanel NGOYI",
+      "Gaelle MANKOU",
+      "Severin KOFFI",
+      "Nadie KOFFI"
+    ],
+    "Table 20": [
+      "Gallimard MBEMBA",
+      "Gertie MBEMBA",
+      "Angle FÉLICIEN",
+      "Marina CARINE",
+      "Euloge TCHIKAYA",
+      "Carelle TCHIKAYA",
+      "Gilles MALONGA",
+      "Belvina MALONGA"
+    ],
+    "Table 21": [
+      "Idris ILOUD",
+      "Michelle ILOUD",
+      "Tony NIMI",
+      "Lilie de TONY",
+      "Cathys NIMI",
+      "Hydriss MOKOKO",
+      "Trésor TSONY",
+      "Murielle TSONY"
+    ],
+    "Table 22": [
+      "Logan TATI",
+      "Christelle VANGA",
+      "Sorel TATI-TCHIBOUAGA",
+      "Chadlie TATI-TCHIBOUANGA",
+      "Ghislain Destin MIZOY",
+      "Ramel GABRIELLE",
+      "Leslie MAKOSSO",
+      "F. SLOAN"
+    ],
+    "Table 23": [
+      "Arnaud BAKOULA",
+      "Arsène BAHONDA",
+      "Marinette MABIALA",
+      "Ma NGANDU",
+      "Pautauche",
+      "Hermann HENEKE",
+      "Madame Heneke",
+      "Loui-Marie LOEMBE"
+    ],
+    "Table 24": [
+      "Steve M'VAYI",
+      "Michelle M'VAYI",
+      "O’Farill VOUAMA",
+      "Raissa VOUAMA",
+      "Arel LOUSSALA",
+      "Ireine LOUSSALA",
+      "Bienvenu MOUSSOUNDA",
+      "Marie MISS"
+    ],
+    "Table 25": [
+      "Juste MABA",
+      "Holsen MABA",
+      "Anvi MABA MOUKASSA",
+      "Madame Anvi MABA",
+      "Landini NGUIMBI",
+      "Marleine PAKA",
+      "Rachenovelle MOUAMBOUMA",
+      "Merina MOUAMBOUMA"
+    ],
+    "Table 26": [
+      "Keane KENNY",
+      "Evodie DARIUS",
+      "Dorisca SAMBA",
+      "Nsayi",
+      "Silvio Ofrey MASSALA",
+      "Esther NSIMBI",
+      "Malthus MAVOUNGOU",
+      "Ida Valérie MAVOUNGOU"
+    ],
+    "Table 27": [
+      "Stevi NGOUISSANI",
+      "Doudou",
+      "Sigalie MAKANGA",
+      "Medard MAKANGA",
+      "Ruth BABELA",
+      "Serge KIGNOUMBA",
+      "Guichelle",
+      "Pedro NSINGUI"
+    ],
+    "Table 28": [
+      "Jacques DOMBIA",
+      "Mégan DOMBIA",
+      "Henri HABIB",
+      "Lemerite MAVOUNGOU",
+      "Rauzeldhe TCHITEMBO",
+      "Pascaline"
+    ],
+    "Table 29": [
+      "Sénateur MATONDO",
+      "Amandine THEANO",
+      "Typés Las",
+      "Raison MERVEILLE",
+      "Yann Carnel VANGA",
+      "Maercedes Iris VANGA",
+      "Nock MABIALA",
+      "Madame Nock MABIALA"
+    ],
+    "Table 30": [
+      "Guelhel Cardier BOUANGA",
+      "Rolph NKEOUA",
+      "Reine NKEOUA",
+      "Chide NTSIBA",
+      "Jadore NTSIBA",
+      "Divine NDINDO"
+    ],
+    "Table 31": [
+      "Afo PANDI",
+      "Hawa JABRE",
+      "Rey MABIALA",
+      "Madame Rey MABIALA",
+      "Roméo BOUBANGA",
+      "Cipriano ITOUA",
+      "Leonela NZINGA",
+      "Tololo PAULMICH"
+    ],
+    "Table 32": [
+      "Josue LOUBONDO",
+      "Julie DIENE",
+      "Sylvain MUKENA",
+      "Vanessa DOUBI",
+      "Cesar Junior LUBAMBA",
+      "Marielle LUBAMBA",
+      "Max BALONGANA",
+      "Davina CAILLET"
+    ]
+  }
+}
