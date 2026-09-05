@@ -25,6 +25,12 @@ stroke:#005A9E;
 stroke-width:3;
 filter:url(#shadow);
 }
+  
+.table-group.active .t{
+  fill:#D4A017 !important;
+  stroke:#8A6500 !important;
+  stroke-width:4;
+}
 
 .num{
 fill:white;
